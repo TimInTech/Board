@@ -1,7 +1,4 @@
-# Changelog – TimInTech/Board
+# Changelog – Board
 
-## [0.1.0] – 2025-09-24
+## [0.1.0] – 2025-09-25
 - Initial release
-
-## Format
-Dieses Changelog folgt sinngemäß „Keep a Changelog“.

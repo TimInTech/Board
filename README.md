@@ -1,16 +1,17 @@
-# TimInTech
+# 🚀 Board
 
-**TimInTech** ist ein modernes, anpassbares Dashboard für Selfhosted-Dienste, Bookmarks und Systemüberwachung.
+Self-hosted HTML dashboard template for GitHub Pages.
+
+## Quickstart
+1. Fork or clone this repository.
+2. Go to "Settings → Pages".
+3. Set source to "main" and folder to "/" (root).
+4. Live at: https://TimInTech.github.io/Board/
 
 ## Features
-- **Kategorisierte Apps** (Netzwerk, Entwicklung, Smart Home, etc.)
-- **Drag & Drop** zum Sortieren
-- **Dunkler/Lichter Modus**
-- **API-Integration** (OpenWeatherMap, Gemini AI)
-- **Import/Export** (HTML, CSV, JSON)
-- **Responsive Design**
+- Static HTML5 dashboard
+- Easy to customize
+- Zero dependencies
 
-## Installation
-1. **Repository klonen**:
-   ```bash
-   git clone https://github.com/dein-benutzername/timintech.git
+## License
+MIT – see LICENSE.
