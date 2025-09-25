@@ -1,0 +1,12 @@
+name: HTML Lint
+on:
+  push: { branches: [ main ] }
+jobs:
+  htmlhint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm init -y >/dev/null 2>&1
+          npm i -D htmlhint >/dev/null 2>&1
+          npx htmlhint "**/*.html" || true
