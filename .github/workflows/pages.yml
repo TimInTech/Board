@@ -1,4 +1,5 @@
-name: Deploy GitHub Pages
+# Version 1.2 – GitHub Pages Deployment für TimInTech/Board
+name: 🚀 Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
