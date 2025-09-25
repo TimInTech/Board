@@ -1,0 +1,3 @@
+Contact: mailto:security@timintech.de
+Policy: https://timintech.github.io/Board/
+Preferred-Languages: de, en
