@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <base href="/Board/">
+  <link rel="canonical" href="https://timintech.github.io/Board/">
+  <meta name="description" content="Minimalistisches HTML-Dashboard – TimInTech/Board">
+  <meta property="og:title" content="TimInTech • Board">
+  <meta property="og:url" content="https://timintech.github.io/Board/">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="Minimalistisches HTML-Dashboard – GitHub Pages">
+  <meta name="twitter:card" content="summary">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'self'; frame-ancestors 'none'">
+  <link rel="icon" href="assets/favicon.png">
+  <meta name="description" content="Minimalistisches HTML-Dashboard – TimInTech/Board">
+  <meta property="og:title" content="TimInTech • Board">
+  <meta property="og:url" content="https://timintech.github.io/Board/">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="Minimalistisches HTML-Dashboard – GitHub Pages">
+  <meta name="twitter:card" content="summary">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'self'; frame-ancestors 'none'">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="canonical" href="https://timintech.github.io/Board/">
+  <meta name="description" content="Minimalistisches HTML-Dashboard – TimInTech/Board">
+  <meta property="og:title" content="TimInTech • Board">
+  <meta property="og:url" content="https://timintech.github.io/Board/">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="Minimalistisches HTML-Dashboard – GitHub Pages">
+  <meta name="twitter:card" content="summary">
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; base-uri 'self'; frame-ancestors 'none'">
+  <link rel="icon" href="assets/favicon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TimInTech</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2926/2926672.png" type="image/png">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg1: #0b132b;
+      --bg2: #1c2541;
+      --text: #e9eef6;
+      --muted: #9fb0c4;
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-strong: rgba(255, 255, 255, 0.14);
+      --brand: #8be9fd;
+      --accent: #7aa2ff;
+      --ok: #7ee787;
+      --warn: #f7b731;
+      --danger: #ff6b6b;
+      --card: rgba(10, 14, 23, 0.65);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      --radius: 18px;
+      --blur: 16px;
+      --tile-size: 110px;
+      --dock-size: 56px;
+    }
+    :root.compact { --tile-size: 92px; --dock-size: 50px; }
+    @media (min-width: 1400px) { :root { --tile-size: 120px; } :root.compact { --tile-size: 104px; } }
+    [data-theme="light"] {
+      --bg1: #f4f7fb;
+      --bg2: #e9eef6;
+      --text: #0b132b;
+      --muted: #63758b;
+      --card: rgba(255, 255, 255, 0.85);
+      --glass: rgba(0, 0, 0, 0.06);
+      --glass-strong: rgba(0, 0, 0, 0.1);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 70% 10%, rgba(122, 162, 255, 0.18), transparent),
+                  radial-gradient(900px 900px at 10% 80%, rgba(139, 233, 253, 0.18), transparent),
+                  linear-gradient(160deg, var(--bg1), var(--bg2));
+      overflow: hidden;
+    }
+    .wallpaper { position: fixed; inset: 0; background: center/cover no-repeat; filter: brightness(0.55) saturate(1.05); z-index: -2; }
+    [data-theme="light"] .wallpaper { filter: brightness(0.9); }
+    .vignette { position: fixed; inset: 0; background: radial-gradient(60% 60% at 50% 30%, transparent, rgba(0, 0, 0, 0.35)); z-index: -1; }
+    .container { height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+    header { padding: 20px clamp(16px, 4vw, 48px); display: flex; align-items: center; gap: 14px; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .logo { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), var(--brand)); color: #0b1220; font-weight: 900; box-shadow: var(--shadow); }
+    .title { font-size: clamp(20px, 3vw, 32px); font-weight: 800; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); font-weight: 600; font-size: 13px; }
+    .btn { cursor: pointer; border: 0; border-radius: 12px; padding: 10px 14px; color: var(--text); background: var(--glass); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
+    .btn:hover { background: var(--glass-strong); }
+    .btn:disabled { cursor: not-allowed; opacity: 0.7; }
+    main { padding: 0 clamp(16px, 4vw, 48px) 120px; overflow: auto; }
+    .greet { text-align: center; margin: 3vh 0 12px; }
+    .greet h1 { font-size: clamp(24px, 4vw, 44px); margin: 0 0 8px; text-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
+    .greet p { margin: 0; color: var(--muted); }
+    .widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px auto 24px; max-width: 1200px; }
+    .card { background: var(--card); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
+    .stat { padding: 14px; display: flex; align-items: center; gap: 12px; }
+    .stat .val { font-size: 22px; font-weight: 800; }
+    .stat .lbl { font-size: 12px; color: var(--muted); }
+    .search { margin: 8px auto 16px; max-width: 1000px; display: flex; gap: 10px; }
+    .field { flex: 1; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
+    .search input { width: 100%; background: transparent; border: 0; outline: 0; color: var(--text); font-size: 15px; }
+    .toolbar { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin: 0 auto 10px; max-width: 1200px; }
+    .toggle { display: inline-flex; gap: 8px; align-items: center; }
+    .toggle input { accent-color: var(--accent); }
+    .sections { max-width: 1200px; margin: 0 auto 48px; display: grid; gap: 16px; }
+    details.section { border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; background: var(--card); }
+    details > summary { list-style: none; cursor: pointer; padding: 10px 12px; color: var(--muted); display: flex; gap: 10px; align-items: center; }
+    details > summary::-webkit-details-marker { display: none; }
+    .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--tile-size), 1fr)); gap: 12px; padding: 0 12px 12px; }
+    .tile { position: relative; display: grid; justify-items: center; gap: 8px; padding: 12px 8px; border-radius: 16px; text-align: center; user-select: none; cursor: grab; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(calc(var(--blur) - 4px)); transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease; box-shadow: var(--shadow); }
+    .tile:active { cursor: grabbing; }
+    .tile:hover { transform: translateY(-3px); background: var(--glass-strong); border-color: rgba(255, 255, 255, 0.2); }
+    .icoWrap { position: relative; }
+    .ico { width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; font-size: 28px; color: #0b1220; font-weight: 900; overflow: hidden; }
+    .ico img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .name { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+    .url { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+    .badge { position: absolute; right: -4px; bottom: -4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(12, 16, 28, 0.8); }
+    .dockWrap { position: fixed; left: 0; right: 0; bottom: 16px; display: grid; place-items: center; pointer-events: none; }
+    .dock { pointer-events: auto; display: flex; gap: 10px; padding: 10px 14px; border-radius: 22px; background: rgba(12, 16, 28, 0.55); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(18px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
+    .dock-item { width: var(--dock-size); height: var(--dock-size); border-radius: 14px; display: grid; place-items: center; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.10); transition: transform 0.08s ease; color: var(--text); overflow: hidden; }
+    .dock-item img { width: 100%; height: 100%; object-fit: cover; }
+    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); z-index: 50; }
+    .panel { width: min(780px, 95vw); background: #0d1324; color: var(--text); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 18px; backdrop-filter: blur(18px); box-shadow: var(--shadow); padding: 18px; }
+    [data-theme="light"] .panel { background: #ffffffcc; }
+    .panel h3 { margin: 6px 6px 14px; }
+    .form { display: grid; gap: 12px; }
+    .form label { font-size: 13px; color: var(--muted); }
+    .form input, .form select, .form textarea { width: 100%; color: var(--text); padding: 12px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 12px; outline: 0; }
+    .form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form .actions { display: flex; gap: 10px; justify-content: space-between; margin-top: 10px; }
+    .hint { font-size: 12px; color: var(--muted); }
+    .drop { margin: 8px 0; padding: 14px; border: 1px dashed rgba(255, 255, 255, 0.25); border-radius: 12px; text-align: center; }
+    @media (max-width: 780px) { :root { --tile-size: 96px; } header { padding-bottom: 6px; } .dock { gap: 8px; } }
+  </style>
+</head>
+<body>
+  <div class="wallpaper" id="wallpaper" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="container">
+    <header>
+    <header>
+      <div class="brand">
+        <div class="logo"><i class="fa-solid fa-robot"></i></div>
+        <div class="title" id="boardTitle">TimInTech</div>
+      </div>
+      <div class="header-actions">
+        <div class="chip" id="liveCpu"><i class="fa-solid fa-microchip"></i><span>CPU: –</span></div>
+        <div class="chip" id="liveMem"><i class="fa-solid fa-memory"></i><span>RAM: –</span></div>
+        <div class="chip" id="liveSto"><i class="fa-solid fa-hdd"></i><span>Disk: –</span></div>
+        <button class="btn" id="btnImport" title="Import"><i class="fa-solid fa-file-import"></i></button>
+        <button class="btn" id="btnExport" title="Export"><i class="fa-solid fa-file-export"></i></button>
+        <button class="btn" id="btnAdd" title="App hinzufügen"><i class="fa-solid fa-plus"></i></button>
+        <button class="btn" id="btnSettings" title="Einstellungen"><i class="fa-solid fa-gear"></i></button>
+        <button class="btn" id="btnTheme" title="Theme umschalten"><i class="fa-solid fa-sun"></i></button>
+      </div>
+    </header>
+    <main>
+      <div class="greet">
+        <h1 id="greeting">Willkommen.</h1>
+        <p id="aiGreeting">Suche, starte und überwache deine Dienste zentral.</p>
+      </div>
+      <div class="widgets">
+        <div class="card stat">
+          <i class="fa-solid fa-circle-nodes" style="color: var(--brand);"></i>
+          <div>
+            <div class="val" id="statApps">0</div>
+            <div class="lbl">Einträge</div>
+          </div>
+        </div>
+        <div class="card stat">
+          <i class="fa-solid fa-signal" style="color: var(--ok);"></i>
+          <div>
+            <div class="val" id="statUp">–</div>
+            <div class="lbl">Online</div>
+          </div>
+        </div>
+        <div class="card stat">
+          <i class="fa-solid fa-tag" style="color: var(--accent);"></i>
+          <div>
+            <div class="val" id="statCats">0</div>
+            <div class="lbl">Kategorien</div>
+          </div>
+        </div>
+        <div class="card stat">
+          <i class="fa-regular fa-clock" style="color: var(--accent);"></i>
+          <div>
+            <div class="val" id="clock">--:--</div>
+            <div class="lbl">Uhrzeit</div>
+          </div>
+        </div>
+        <div class="card stat" id="weatherCard">
+          <i class="fa-solid fa-cloud-sun" style="color: var(--accent);"></i>
+          <div>
+            <div class="val" id="weatherNow">—</div>
+            <div class="lbl" id="weatherLbl">Wetter</div>
+          </div>
+        </div>
+      </div>
+      <div class="search">
+        <div class="field">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input id="q" placeholder="Suche nach Name, Domain oder Tag…  ⌘/Ctrl+K" autofocus>
+        </div>
+        <button class="btn" id="btnClear"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="toolbar">
+        <label class="toggle"><input type="checkbox" id="chkCompact"> Kompakter Modus</label>
+        <label class="toggle"><input type="checkbox" id="chkCollapse"> Kategorien einklappen</label>
+      </div>
+      <div class="sections" id="sections"></div>
+    </main>
+    <div class="dockWrap">
+      <div class="dock" id="dock"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Add -->
+  <div class="modal" id="modalAdd">
+    <div class="panel">
+      <h3>Eintrag hinzufügen</h3>
+      <div class="form">
+        <div class="row">
+          <div>
+            <label for="fName">Name</label>
+            <input id="fName" placeholder="z. B. Mein Dienst" required>
+          </div>
+          <div>
+            <label for="fCat">Kategorie</label>
+            <select id="fCat">
+              <option>Favoriten</option>
+              <option>Netzwerk</option>
+              <option>Entwicklung</option>
+              <option>Produktivität</option>
+              <option>Smart Home</option>
+              <option>Sonstiges</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="fUrl">URL</label>
+            <input id="fUrl" placeholder="http://192.168.178.21/admin">
+          </div>
+          <div style="align-self: end;">
+            <button class="btn" id="btnSuggest" style="width: 100%;">✨ Details vorschlagen</button>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="fIcon">Icon (FA Klasse oder Bild-URL; leer = Favicon)</label>
+            <input id="fIcon" placeholder="fa-solid fa-globe oder https://.../icon.png">
+          </div>
+          <div>
+            <label for="fType">Typ</label>
+            <select id="fType">
+              <option value="generic">Generic</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="fToken">API-Token (optional)</label>
+            <input id="fToken" placeholder="Token für erweiterte Funktionen…">
+          </div>
+          <div>
+            <label for="fTags">Tags (Komma-getrennt)</label>
+            <input id="fTags" placeholder="dns,vpn,selfhosted">
+          </div>
+        </div>
+        <div class="actions">
+          <div class="hint">APIs sind optional. Für erweiterte Statusanzeigen später in Einstellungen hinterlegen.</div>
+          <div>
+            <button class="btn" id="btnCancelAdd">Abbrechen</button>
+            <button class="btn" id="btnSave"><i class="fa-solid fa-check"></i> Speichern</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Import -->
+  <div class="modal" id="modalImport">
+    <div class="panel">
+      <h3>Import: Bookmarks/Listen</h3>
+      <div class="form">
+        <div class="drop" id="drop">Dateien hier ablegen oder wählen. Unterstützt: HTML (Netscape), CSV, JSON (Array), TXT (eine URL pro Zeile).</div>
+        <input type="file" id="fileInput" multiple accept=".html,.htm,.csv,.json,.txt" />
+        <div class="row">
+          <div><label><input type="checkbox" id="chkUseFolder"> Ordner als Kategorien</label></div>
+          <div><label><input type="checkbox" id="chkDryRun" checked> Trockentest</label></div>
+        </div>
+        <div class="actions">
+          <div class="hint">Duplikate werden per normalisierter URL erkannt und gemerged.</div>
+          <div>
+            <button class="btn" id="btnCancelImport">Schließen</button>
+            <button class="btn" id="btnDoImport"><i class="fa-solid fa-file-arrow-up"></i> Import</button>
+          </div>
+        </div>
+        <pre id="importLog" style="max-height: 220px; overflow: auto; background: rgba(0, 0, 0, 0.35); padding: 10px; border-radius: 12px;"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Settings -->
+  <div class="modal" id="modalSettings">
+    <div class="panel">
+      <h3>Einstellungen</h3>
+      <div class="form">
+        <div class="row">
+          <div>
+            <label for="setTheme">Theme</label>
+            <select id="setTheme">
+              <option value="auto">Auto (System)</option>
+              <option value="dark">Dunkel</option>
+              <option value="light">Hell</option>
+            </select>
+          </div>
+          <div>
+            <label for="setCompact">Layout</label>
+            <select id="setCompact">
+              <option value="normal">Normal</option>
+              <option value="compact">Kompakt</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="setWallpaper">Wallpaper hochladen</label>
+            <input id="setWallpaper" type="file" accept="image/*" />
+          </div>
+          <div>
+            <label for="setUnsplash">Unsplash (Thema oder URL)</label>
+            <input id="setUnsplash" placeholder="z. B. mountains, city night oder https://images.unsplash.com/..." />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="setGeminiKey">Gemini API-Key (optional)</label>
+            <input id="setGeminiKey" placeholder="Dein Gemini API-Key" />
+          </div>
+          <div>
+            <label for="setGeminiWp">✨ AI Wallpaper (Thema)</label>
+            <div class="search" style="margin: 0; gap: 8px;">
+              <div class="field">
+                <input id="setGeminiWp" placeholder="z.B. neon city, bioluminescent forest...">
+              </div>
+              <button class="btn" id="btnGenWp"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="setOWMKey">OpenWeatherMap API-Key (optional)</label>
+            <input id="setOWMKey" placeholder="owm_xxx" />
+          </div>
+          <div>
+            <label for="setCity">Ort (Stadt, Ländercode)</label>
+            <input id="setCity" placeholder="Berlin,DE" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="setICS">Kalender-ICS URL (optional)</label>
+            <input id="setICS" placeholder="https://.../calendar.ics" />
+          </div>
+          <div>
+            <label for="setICSFile">oder ICS-Datei</label>
+            <input id="setICSFile" type="file" accept="text/calendar,.ics" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Daten exportieren</label>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn" id="btnExportJSON"><i class="fa-solid fa-file-code"></i> JSON</button>
+              <button class="btn" id="btnExportMD"><i class="fa-solid fa-file-lines"></i> Markdown</button>
+            </div>
+          </div>
+          <div>
+            <label>Backup/Restore</label>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn" id="btnBackup"><i class="fa-solid fa-download"></i> Backup</button>
+              <button class="btn" id="btnRestore"><i class="fa-solid fa-upload"></i> Restore</button>
+              <input id="restoreFile" type="file" accept="application/json" hidden>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <div class="hint">Integrationen (Docker/Proxmox/MQTT/WebDAV etc.) sind optional – später als Module zuschaltbar. Keine Abfragen beim Start.</div>
+          <div>
+            <button class="btn" id="btnCloseSettings">Schließen</button>
+            <button class="btn" id="btnSaveSettings"><i class="fa-solid fa-check"></i> Speichern</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== KEYS & DEFAULTS =====
+    const MODEL_KEY = 'timintech-board-v3';
+    const SETTINGS_KEY = 'timintech-settings-v1';
+    const WALLPAPER_KEY = 'timintech-wallpaper';
+    const ICS_CACHE_KEY = 'timintech-ics-cache';
+    const DEFAULT_APPS = [];
+    const DEFAULT_SETTINGS = {
+      theme: 'auto',
+      compact: false,
+      city: '',
+      owmKey: '',
+      geminiKey: '',
+      unsplash: '',
+      icsUrl: '',
+    };
+
+    // ===== UTIL =====
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+    const el = (t, c, h) => { const e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; };
+    const domain = (u) => { try { return new URL(u).hostname; } catch { return u; } };
+    const fav = (u) => { const d = domain(u); return `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent('https://' + d)}`; };
+    function normUrl(u) {
+      try {
+        const url = new URL(u);
+        url.hash = '';
+        const bad = ['utm_', 'gclid', 'fbclid', 'ref', 'mc_eid'];
+        const keep = [...url.searchParams.entries()].filter(([k]) => !bad.some(b => k.toLowerCase().startsWith(b)));
+        url.search = '';
+        for (const [k, v] of keep) url.searchParams.append(k, v);
+        let s = url.toString();
+        if (s.endsWith('/')) s = s.slice(0, -1);
+        return s.toLowerCase();
+      } catch {
+        return String(u).trim();
+      }
+    }
+    function download(name, text, type = 'application/json') {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([text], { type }));
+      a.download = name;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    }
+    function showNotification(message, type = 'info') {
+      const notification = el('div', 'chip');
+      notification.style.position = 'fixed';
+      notification.style.bottom = '80px';
+      notification.style.left = '50%';
+      notification.style.transform = 'translateX(-50%)';
+      notification.style.zIndex = '100';
+      notification.style.boxShadow = 'var(--shadow)';
+      notification.style.transition = 'opacity .3s ease, bottom .3s ease';
+      notification.style.opacity = '0';
+      if (type === 'success') notification.style.background = 'var(--ok)';
+      if (type === 'error') notification.style.background = 'var(--danger)';
+      notification.innerHTML = message;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.bottom = '90px';
+      }, 10);
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.bottom = '80px';
+        setTimeout(() => notification.remove(), 300);
+      }, 4000);
+    }
+
+    // ===== GEMINI API HELPERS =====
+    const API_MODEL_TEXT = 'gemini-2.5-flash-preview-05-20';
+    const API_MODEL_IMAGE = 'imagen-3.0-generate-002';
+    async function callGeminiAPI(model, payload, isImage = false) {
+      const apiKey = SETTINGS.geminiKey;
+      if (!apiKey) {
+        showNotification('Bitte Gemini API-Key in den Einstellungen hinterlegen.', 'error');
+        return null;
+      }
+      let apiUrl;
+      if (isImage) {
+        apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+      } else {
+        apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+      }
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+          const errorBody = await response.text();
+          throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
+        }
+        return await response.json();
+      } catch (error) {
+        console.error(`API call for model ${model} failed: ${error.message}`);
+        showNotification(`API-Fehler: ${error.message}`, 'error');
+        return null;
+      }
+    }
+
+    // ===== STATE =====
+    function loadSettings() { try { return { ...DEFAULT_SETTINGS, ...(JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}')) }; } catch { return { ...DEFAULT_SETTINGS }; } }
+    function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+    function loadModel() { const raw = localStorage.getItem(MODEL_KEY); if (!raw) { localStorage.setItem(MODEL_KEY, JSON.stringify(DEFAULT_APPS)); return DEFAULT_APPS; } try { return JSON.parse(raw); } catch { return DEFAULT_APPS; } }
+    function saveModel(data) { localStorage.setItem(MODEL_KEY, JSON.stringify(data)); }
+    let SETTINGS = loadSettings();
+    let APPS = loadModel();
+
+    // ===== THEME & WALLPAPER =====
+    function applyTheme() {
+      const theme = SETTINGS.theme === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : SETTINGS.theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('btnTheme').innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+      document.documentElement.classList.toggle('compact', !!SETTINGS.compact);
+    }
+    function applyWallpaper() {
+      const wp = $('#wallpaper');
+      const stored = localStorage.getItem(WALLPAPER_KEY);
+      if (stored) { wp.style.backgroundImage = `url(${stored})`; return; }
+      if (SETTINGS.unsplash) {
+        const v = SETTINGS.unsplash.trim();
+        const url = v.startsWith('http') ? v : `https://source.unsplash.com/2400x1400/?${encodeURIComponent(v)}`;
+        wp.style.backgroundImage = `url(${url})`;
+      } else {
+        wp.style.backgroundImage = 'url(https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2400&auto=format&fit=crop)';
+      }
+    }
+
+    // ===== RENDER =====
+    const sectionsEl = $('#sections');
+    const dockEl = $('#dock');
+    function grouped() { const m = new Map(); for (const a of APPS) { if (!m.has(a.cat)) m.set(a.cat, []); m.get(a.cat).push(a); } return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0])); }
+    function tileIcon(a) { const wrap = el('div', 'icoWrap'); const ico = el('div', 'ico'); const img = new Image(); img.src = a.icon && a.icon.startsWith('http') ? a.icon : fav(a.url); ico.appendChild(img); wrap.appendChild(ico); const b = el('span', 'badge'); b.style.background = '#666'; wrap.appendChild(b); return wrap; }
+    function tile(a) {
+      const t = el('div', 'tile');
+      t.setAttribute('draggable', 'true');
+      t.appendChild(tileIcon(a));
+      t.appendChild(el('div', 'name', a.name));
+      t.appendChild(el('div', 'url', domain(a.url)));
+      t.onclick = (e) => { if (e.target.closest('.dragging')) return; window.open(a.url, '_blank', 'noopener'); };
+      t.dataset.key = a.name + '@' + a.url;
+      return t;
+    }
+    function render() {
+      $('#statApps').textContent = APPS.length;
+      const sc = $('#statCats');
+      if (sc) sc.textContent = new Set(APPS.map(a => a.cat)).size;
+      sectionsEl.innerHTML = '';
+      for (const [cat, list] of grouped()) {
+        const det = document.createElement('details');
+        det.className = 'section';
+        if (!SETTINGS.collapse) det.setAttribute('open', '');
+        const sum = document.createElement('summary');
+        sum.innerHTML = `<i class="fa-solid fa-folder"></i> <strong>${cat}</strong>`;
+        det.appendChild(sum);
+        const grid = el('div', 'apps');
+        list.forEach(a => grid.appendChild(tile(a)));
+        det.appendChild(grid);
+        sectionsEl.appendChild(det);
+      }
+      dockEl.innerHTML = '';
+      APPS.slice(0, 8).forEach(a => {
+        const d = el('div', 'dock-item');
+        const img = new Image();
+        img.src = fav(a.url);
+        d.appendChild(img);
+        d.title = a.name;
+        d.onclick = () => window.open(a.url, '_blank', 'noopener');
+        dockEl.appendChild(d);
+      });
+      initDnD();
+    }
+
+    // ===== SEARCH =====
+    const input = $('#q');
+    $('#btnClear').addEventListener('click', () => { input.value = ''; doSearch(); input.focus(); });
+    input.addEventListener('input', doSearch);
+    window.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.focus(); } });
+    function doSearch() {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { APPS = loadModel(); render(); return; }
+      const data = loadModel();
+      APPS = data.filter(a => [a.name, a.url, ...(a.tags || [])].join(' ').toLowerCase().includes(q));
+      render();
+    }
+
+    // ===== LIVE & AI GREETING =====
+    async function fetchAIGreeting() {
+      const greetingEl = $('#greeting');
+      const subGreetingEl = $('#aiGreeting');
+      const h = new Date().getHours();
+      greetingEl.textContent = h < 11 ? 'Guten Morgen.' : h < 17 ? 'Guten Tag.' : 'Guten Abend.';
+      subGreetingEl.textContent = 'Suche, starte und überwache deine Dienste zentral.';
+      if (!SETTINGS.geminiKey) return;
+      subGreetingEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Denke mir einen netten Spruch aus...';
+      try {
+        const systemPrompt = "Act as a friendly and slightly nerdy AI assistant for a homelab dashboard. Provide a short, one-sentence welcome message for the user in German. It can be a fun fact about technology, a motivational quote for a developer, or a cheerful good morning/afternoon/evening. Keep it concise and inspiring.";
+        const userQuery = "Generate a new welcome message.";
+        const payload = {
+          contents: [{ parts: [{ text: userQuery }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+        };
+        const result = await callGeminiAPI(API_MODEL_TEXT, payload);
+        const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) subGreetingEl.textContent = text;
+      } catch (error) {
+        console.error("Failed to fetch AI greeting:", error);
+        subGreetingEl.textContent = 'Suche, starte und überwache deine Dienste zentral.';
+      }
+    }
+    const cpu = $('#liveCpu span'), mem = $('#liveMem span'), sto = $('#liveSto span');
+    setInterval(() => {
+      cpu.textContent = `CPU: ${(10 + Math.random() * 40).toFixed(1)}%`;
+      mem.textContent = `RAM: ${(2 + Math.random() * 14).toFixed(1)} GB`;
+      sto.textContent = `Disk: ${(8 + Math.random() * 240).toFixed(1)} GB`;
+    }, 2500);
+    function tickClock() { const d = new Date(); const hh = String(d.getHours()).padStart(2, '0'); const mm = String(d.getMinutes()).padStart(2, '0'); $('#clock').textContent = `${hh}:${mm}`; }
+    tickClock();
+    setInterval(tickClock, 30 * 1000);
+
+    // ===== STATUS BADGES =====
+    async function updateStatuses() {
+      const apps = loadModel();
+      if (!apps.length) { $('#statUp').textContent = `0/0`; return; }
+      const promises = apps.map(async (a) => {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          await fetch(a.url, { mode: 'no-cors', signal: controller.signal });
+          clearTimeout(timeoutId);
+          return { key: a.name + '@' + a.url, state: true };
+        } catch { return { key: a.name + '@' + a.url, state: false }; }
+      });
+      const results = await Promise.all(promises);
+      let up = 0;
+      results.forEach(res => {
+        const b = document.querySelector(`[data-key="${CSS.escape(res.key)}"] .badge`);
+        if (b) b.style.background = res.state ? 'var(--ok)' : 'var(--danger)';
+        if (res.state) up++;
+      });
+      $('#statUp').textContent = `${up}/${apps.length}`;
+    }
+
+    // ===== ADD MODAL =====
+    const mAdd = $('#modalAdd');
+    const btnAdd = $('#btnAdd');
+    const btnCancelAdd = $('#btnCancelAdd');
+    const btnSave = $('#btnSave');
+    const fName = $('#fName'), fCat = $('#fCat'), fUrl = $('#fUrl'), fIcon = $('#fIcon'), fType = $('#fType'), fToken = $('#fToken'), fTags = $('#fTags');
+    const btnSuggest = $('#btnSuggest');
+    btnAdd.onclick = () => { mAdd.style.display = 'flex'; fName.focus(); };
+    btnCancelAdd.onclick = () => { mAdd.style.display = 'none'; };
+    mAdd.addEventListener('click', e => { if (e.target === mAdd) mAdd.style.display = 'none'; });
+    btnSave.onclick = () => {
+      const app = {
+        name: fName.value.trim() || 'Neu',
+        url: fUrl.value.trim() || '#',
+        cat: fCat.value || 'Sonstiges',
+        type: 'generic',
+        token: fToken.value.trim(),
+        icon: fIcon.value.trim(),
+        tags: fTags.value.split(',').map(s => s.trim()).filter(Boolean)
+      };
+      const data = loadModel();
+      data.push(app);
+      saveModel(dedupe(data));
+      APPS = loadModel();
+      render();
+      mAdd.style.display = 'none';
+      fName.value = fUrl.value = fIcon.value = fToken.value = fTags.value = '';
+    };
+    btnSuggest.onclick = async () => {
+      const url = fUrl.value.trim();
+      if (!url) { showNotification('Bitte zuerst eine URL eingeben.', 'error'); return; }
+      const originalBtnText = btnSuggest.innerHTML;
+      btnSuggest.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      btnSuggest.disabled = true;
+      try {
+        const systemPrompt = `Analyze the given URL and suggest a suitable 'name', 'category', and an array of 'tags' for a dashboard application. The possible categories are: Favoriten, Netzwerk, Entwicklung, Produktivität, Smart Home, Sonstiges. Default to 'Sonstiges' if unsure. Tags should be relevant lowercase keywords. Return ONLY a valid JSON object.`;
+        const userQuery = `URL: ${url}`;
+        const payload = {
+          contents: [{ parts: [{ text: userQuery }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: {
+              type: "OBJECT",
+              properties: {
+                "name": { "type": "STRING" },
+                "category": { "type": "STRING" },
+                "tags": { "type": "ARRAY", "items": { "type": "STRING" } }
+              },
+              required: ["name", "category", "tags"]
+            }
+          }
+        };
+        const result = await callGeminiAPI(API_MODEL_TEXT, payload);
+        const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (jsonText) {
+          const data = JSON.parse(jsonText);
+          if (!fName.value) fName.value = data.name || '';
+          const categoryExists = [...fCat.options].some(opt => opt.value === data.category);
+          if (categoryExists) fCat.value = data.category;
+          if (!fTags.value) fTags.value = (data.tags || []).join(',');
+        }
+      } catch (error) {
+        console.error("Failed to suggest details:", error);
+        showNotification('Fehler beim Vorschlagen der Details.', 'error');
+      } finally {
+        btnSuggest.innerHTML = originalBtnText;
+        btnSuggest.disabled = false;
+      }
+    };
+
+    // ===== IMPORT MODAL =====
+    const mImp = $('#modalImport'), btnImport = $('#btnImport'), btnCancelImport = $('#btnCancelImport'), btnDoImport = $('#btnDoImport');
+    const fileInput = $('#fileInput'), drop = $('#drop'), chkUseFolder = $('#chkUseFolder'), chkDryRun = $('#chkDryRun'), logEl = $('#importLog');
+    btnImport.onclick = () => { mImp.style.display = 'flex'; logEl.textContent = 'Bereit.'; };
+    btnCancelImport.onclick = () => { mImp.style.display = 'none'; };
+    mImp.addEventListener('click', e => { if (e.target === mImp) mImp.style.display = 'none'; });
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.background = 'rgba(255,255,255,.08)'; });
+    drop.addEventListener('dragleave', () => { drop.style.background = 'transparent'; });
+    drop.addEventListener('drop', e => { e.preventDefault(); drop.style.background = 'transparent'; handleFiles(e.dataTransfer.files); });
+    fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+    btnDoImport.onclick = () => handleFiles(fileInput.files);
+    function log(msg) { logEl.textContent += `\n${msg}`; logEl.scrollTop = logEl.scrollHeight; }
+    async function handleFiles(fileList) {
+      if (!fileList || !fileList.length) { log('Keine Dateien.'); return; }
+      let imported = [];
+      for (const f of fileList) {
+        const text = await f.text();
+        log(`Datei: ${f.name} (${f.type || 'n/a'})`);
+        if (/\.html?$/i.test(f.name)) imported = imported.concat(parseHTML(text, chkUseFolder.checked));
+        else if (/\.csv$/i.test(f.name)) imported = imported.concat(parseCSV(text));
+        else if (/\.json$/i.test(f.name)) imported = imported.concat(parseJSON(text));
+        else if (/\.txt$/i.test(f.name)) imported = imported.concat(parseTXT(text));
+        else { log('Unbekanntes Format ignoriert.'); }
+      }
+      if (!imported.length) { log('Nichts erkannt.'); return; }
+      const cleaned = imported.map(inferCategory).map(x => ({ ...x, url: normUrl(x.url), name: x.name?.trim() || domain(x.url) }));
+      const merged = mergeWithExisting(cleaned, loadModel());
+      log(`Vorschau: +${cleaned.length} Einträge, nach Duplikaterkennung -> +${merged.added} neu, ${merged.updated} aktualisiert.`);
+      if (!chkDryRun.checked) { saveModel(merged.data); APPS = loadModel(); render(); log('Persistiert.'); }
+      else { log('Trockentest aktiv. Nichts gespeichert.'); }
+    }
+    function parseHTML(html, useFolder) {
+      const out = [];
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const anchors = [...doc.querySelectorAll('a[href]')];
+      anchors.forEach(a => {
+        let cat = 'Sonstiges';
+        if (useFolder) {
+          let p = a.parentElement;
+          while (p && p !== doc.body) {
+            const h = p.previousElementSibling;
+            if (h && h.tagName === 'H3') { cat = h.textContent.trim() || cat; break; }
+            p = p.parentElement;
+          }
+        }
+        out.push({ name: a.textContent.trim() || a.getAttribute('href'), url: a.getAttribute('href'), cat, type: 'generic', tags: guessTags(a.getAttribute('href')) });
+      });
+      return out;
+    }
+    function parseCSV(text) {
+      const out = [];
+      const lines = text.split(/\r?\n/).filter(Boolean);
+      if (!lines.length) return out;
+      const sep = (lines[0].includes(';') && !lines[0].includes(',')) ? ';' : ',';
+      let start = 0;
+      let hdr = ['name', 'url', 'cat'];
+      const cells = l => {
+        const parts = [];
+        let cur = '';
+        let q = false;
+        for (let i = 0; i < l.length; i++) {
+          const c = l[i];
+          if (c === '"') { q = !q; continue; }
+          if (!q && c === sep) { parts.push(cur.trim()); cur = ''; } else { cur += c; }
+        }
+        parts.push(cur.trim());
+        return parts;
+      };
+      const first = cells(lines[0]);
+      if (first.some(v => /url/i.test(v))) { hdr = first.map(s => s.toLowerCase()); start = 1; }
+      for (let i = start; i < lines.length; i++) {
+        const cols = cells(lines[i]);
+        const row = {};
+        hdr.forEach((h, j) => row[h] = cols[j] || '');
+        if (row.url) out.push({ name: row.name || domain(row.url), url: row.url, cat: row.cat || 'Sonstiges', type: 'generic', tags: guessTags(row.url) });
+      }
+      return out;
+    }
+    function parseJSON(text) {
+      try {
+        const arr = JSON.parse(text);
+        if (Array.isArray(arr)) return arr.filter(x => x && x.url).map(x => ({ name: x.name || domain(x.url), url: x.url, cat: x.cat || 'Sonstiges', type: 'generic', tags: x.tags || guessTags(x.url) }));
+      } catch { }
+      return [];
+    }
+    function parseTXT(text) { return text.split(/\r?\n/).map(s => s.trim()).filter(Boolean).map(u => ({ name: domain(u), url: u, cat: 'Sonstiges', type: 'generic', tags: guessTags(u) })); }
+    function guessTags(u) {
+      const d = domain(u).split('.');
+      const t = [];
+      d.forEach(x => { if (x.length > 2) { if (!t.includes(x.toLowerCase())) t.push(x.toLowerCase()); } });
+      return t.slice(0, 5);
+    }
+    function inferCategory(x) {
+      if (x.cat && x.cat !== 'Sonstiges') return x;
+      const d = domain(x.url);
+      if (/(git|code|dev|gitea|github|gitlab)/i.test(d)) x.cat = 'Entwicklung';
+      else if (/(home|hass|homeassistant)/i.test(d)) x.cat = 'Smart Home';
+      else if (/(pihole|dns|adguard)/i.test(d)) x.cat = 'Netzwerk';
+      else if (/(portainer|docker|compose|traefik|caddy)/i.test(d)) x.cat = 'Netzwerk';
+      else if (/(mail|docs|drive|todo|note|paperless|wiki)/i.test(d)) x.cat = 'Produktivität';
+      else x.cat = 'Sonstiges';
+      return x;
+    }
+    function mergeWithExisting(imported, existing) {
+      const byUrl = new Map(existing.map(a => [normUrl(a.url), { ...a }]));
+      let added = 0, updated = 0;
+      for (const r of imported) {
+        const key = normUrl(r.url);
+        if (byUrl.has(key)) {
+          const cur = byUrl.get(key);
+          cur.name = cur.name || r.name;
+          cur.cat = cur.cat && cur.cat !== 'Sonstiges' ? cur.cat : r.cat;
+          cur.type = cur.type || r.type;
+          cur.tags = Array.from(new Set([...(cur.tags || []), ...(r.tags || [])]));
+          if (r.icon && !cur.icon) cur.icon = r.icon;
+          byUrl.set(key, cur);
+          updated++;
+        } else {
+          byUrl.set(key, r);
+          added++;
+        }
+      }
+      return { data: [...byUrl.values()], added, updated };
+    }
+    function dedupe(list) {
+      const seen = new Set();
+      const out = [];
+      for (const a of list) {
+        const k = normUrl(a.url);
+        if (seen.has(k)) {
+          const tgt = out.find(x => normUrl(x.url) === k);
+          if (tgt) {
+            tgt.tags = Array.from(new Set([...(tgt.tags || []), ...(a.tags || [])]));
+            if (!tgt.icon && a.icon) tgt.icon = a.icon;
+          }
+        } else {
+          seen.add(k);
+          out.push(a);
+        }
+      }
+      return out;
+    }
+
+    // ===== EXPORT / BACKUP =====
+    $('#btnExport').addEventListener('click', () => openSettings());
+    $('#btnExportJSON').addEventListener('click', () => download('timintech-apps.json', JSON.stringify(loadModel(), null, 2)));
+    $('#btnExportMD').addEventListener('click', () => {
+      const groups = grouped();
+      let md = `# TimInTech Export\n\n`;
+      for (const [cat, list] of groups) {
+        md += `## ${cat}\n`;
+        for (const a of list) { md += `- [${a.name}](${a.url})  \\n`; }
+        md += `\n`;
+      }
+      download('timintech-apps.md', md, 'text/markdown');
+    });
+    $('#btnBackup').addEventListener('click', () => {
+      const payload = { settings: loadSettings(), apps: loadModel(), ts: Date.now() };
+      download('timintech-backup.json', JSON.stringify(payload));
+    });
+    $('#btnRestore').addEventListener('click', () => $('#restoreFile').click());
+    $('#restoreFile').addEventListener('change', async (e) => {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      try {
+        const j = JSON.parse(await f.text());
+        if (j.apps) saveModel(j.apps);
+        if (j.settings) saveSettings(j.settings);
+        SETTINGS = loadSettings();
+        APPS = loadModel();
+        applyTheme();
+        applyWallpaper();
+        render();
+        updateStatuses();
+        showNotification('Backup erfolgreich eingespielt.', 'success');
+      } catch {
+        showNotification('Backup ungültig.', 'error');
+      }
+    });
+
+    // ===== SETTINGS =====
+    const mSet = $('#modalSettings');
+    const btnSettings = $('#btnSettings');
+    const btnSaveSettings = $('#btnSaveSettings');
+    const btnCloseSettings = $('#btnCloseSettings');
+    const setTheme = $('#setTheme'), setCompact = $('#setCompact');
+    const setOWMKey = $('#setOWMKey'), setCity = $('#setCity');
+    const setWallpaper = $('#setWallpaper'), setUnsplash = $('#setUnsplash');
+    const setICS = $('#setICS'), setICSFile = $('#setICSFile');
+    const chkCompact = $('#chkCompact');
+    const chkCollapse = $('#chkCollapse');
+    const setGeminiKey = $('#setGeminiKey');
+    const setGeminiWp = $('#setGeminiWp'), btnGenWp = $('#btnGenWp');
+    function openSettings() {
+      const s = loadSettings();
+      setTheme.value = s.theme;
+      setCompact.value = s.compact ? 'compact' : 'normal';
+      setOWMKey.value = s.owmKey || '';
+      setCity.value = s.city || '';
+      setUnsplash.value = s.unsplash || '';
+      setICS.value = s.icsUrl || '';
+      setGeminiKey.value = s.geminiKey || '';
+      chkCompact.checked = !!s.compact;
+      chkCollapse.checked = !!s.collapse;
+      mSet.style.display = 'flex';
+    }
+    btnSettings.onclick = openSettings;
+    btnCloseSettings.onclick = () => mSet.style.display = 'none';
+    mSet.addEventListener('click', e => { if (e.target === mSet) mSet.style.display = 'none'; });
+    $('#btnTheme').onclick = () => {
+      SETTINGS.theme = (SETTINGS.theme === 'dark') ? 'light' : (SETTINGS.theme === 'light') ? 'auto' : 'dark';
+      saveSettings(SETTINGS);
+      applyTheme();
+    };
+    chkCompact.onchange = () => { SETTINGS.compact = chkCompact.checked; saveSettings(SETTINGS); applyTheme(); };
+    chkCollapse.onchange = () => { SETTINGS.collapse = chkCollapse.checked; saveSettings(SETTINGS); render(); };
+    setWallpaper.addEventListener('change', async () => {
+      const f = setWallpaper.files?.[0];
+      if (!f) return;
+      const b = await f.arrayBuffer();
+      const base = URL.createObjectURL(new Blob([b]));
+      const img = new Image();
+      img.onload = () => {
+        const cvs = document.createElement('canvas');
+        const maxW = 2400;
+        const scale = Math.min(1, maxW / img.width);
+        cvs.width = img.width * scale;
+        cvs.height = img.height * scale;
+        const ctx = cvs.getContext('2d');
+        ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
+        try {
+          const data = cvs.toDataURL('image/jpeg', 0.85);
+          localStorage.setItem(WALLPAPER_KEY, data);
+          applyWallpaper();
+        } catch {
+          showNotification('Wallpaper zu groß', 'error');
+        }
+        URL.revokeObjectURL(base);
+      };
+      img.src = base;
+    });
+    setUnsplash.addEventListener('change', () => { SETTINGS.unsplash = setUnsplash.value; saveSettings(SETTINGS); localStorage.removeItem(WALLPAPER_KEY); applyWallpaper(); });
+    btnGenWp.onclick = async () => {
+      const prompt = setGeminiWp.value.trim();
+      if (!prompt) { showNotification('Bitte ein Thema eingeben.', 'error'); return; }
+      if (!SETTINGS.geminiKey) { showNotification('Bitte Gemini API-Key in den Einstellungen hinterlegen.', 'error'); return; }
+      const originalBtnContent = btnGenWp.innerHTML;
+      btnGenWp.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      btnGenWp.disabled = true;
+      setGeminiWp.disabled = true;
+      try {
+        const payload = {
+          instances: [{ prompt: `A beautiful, high-resolution, 16:9 desktop wallpaper of: ${prompt}. Dark, moody, atmospheric.` }],
+          parameters: { "sampleCount": 1 }
+        };
+        const result = await callGeminiAPI(API_MODEL_IMAGE, payload, true);
+        const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
+        if (base64Data) {
+          const imageUrl = `data:image/png;base64,${base64Data}`;
+          const img = new Image();
+          img.onload = () => {
+            const cvs = document.createElement('canvas');
+            const maxW = 2400;
+            const scale = Math.min(1, maxW / img.width);
+            cvs.width = img.width * scale;
+            cvs.height = img.height * scale;
+            const ctx = cvs.getContext('2d');
+            ctx.drawImage(img, 0, 0, cvs.width, cvs.height);
+            try {
+              const dataUrl = cvs.toDataURL('image/jpeg', 0.85);
+              localStorage.setItem(WALLPAPER_KEY, dataUrl);
+              applyWallpaper();
+              setUnsplash.value = '';
+              SETTINGS.unsplash = '';
+              saveSettings(SETTINGS);
+              showNotification('Wallpaper wurde erstellt!', 'success');
+            } catch (e) {
+              console.error("Could not save generated wallpaper:", e);
+              $('#wallpaper').style.backgroundImage = `url(${imageUrl})`;
+              showNotification('Wallpaper zu groß, nur temporär.', 'warn');
+            }
+          };
+          img.src = imageUrl;
+        } else {
+          throw new Error("No image data in API response.");
+        }
+      } catch (error) {
+        console.error("Failed to generate wallpaper:", error);
+        showNotification('Fehler bei der Wallpaper-Generierung.', 'error');
+      } finally {
+        btnGenWp.innerHTML = originalBtnContent;
+        btnGenWp.disabled = false;
+        setGeminiWp.disabled = false;
+      }
+    };
+    btnSaveSettings.onclick = () => {
+      SETTINGS.theme = setTheme.value;
+      SETTINGS.compact = (setCompact.value === 'compact');
+      SETTINGS.owmKey = setOWMKey.value.trim();
+      SETTINGS.city = setCity.value.trim();
+      SETTINGS.unsplash = setUnsplash.value.trim();
+      SETTINGS.icsUrl = setICS.value.trim();
+      SETTINGS.geminiKey = setGeminiKey.value.trim();
+      saveSettings(SETTINGS);
+      applyTheme();
+      applyWallpaper();
+      mSet.style.display = 'none';
+      fetchWeather();
+      fetchICS();
+    };
+    setICSFile.addEventListener('change', async () => {
+      const f = setICSFile.files?.[0];
+      if (!f) return;
+      const text = await f.text();
+      localStorage.setItem(ICS_CACHE_KEY, JSON.stringify({ ts: Date.now(), text }));
+      fetchICS();
+    });
+
+    // ===== WEATHER =====
+    async function fetchWeather() {
+      const card = $('#weatherCard');
+      const label = $('#weatherLbl');
+      const out = $('#weatherNow');
+      const { owmKey, city } = loadSettings();
+      if (!owmKey || !city) { label.textContent = 'Wetter (nicht konfiguriert)'; out.textContent = '—'; return; }
+      try {
+        const u = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${owmKey}&units=metric&lang=de`;
+        const r = await fetch(u);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json();
+        out.textContent = `${Math.round(j.main.temp)}°C, ${j.weather?.[0]?.description || ''}`;
+        label.textContent = `Wetter – ${j.name}`;
+      } catch (e) {
+        label.textContent = 'Wetter (Fehler)';
+        out.textContent = '—';
+      }
+    }
+
+    // ===== ICS CALENDAR =====
+    async function fetchICS() {
+      const { icsUrl } = loadSettings();
+      const cacheRaw = localStorage.getItem(ICS_CACHE_KEY);
+      let text = null;
+      if (cacheRaw) {
+        try { const c = JSON.parse(cacheRaw); if (Date.now() - c.ts < 1000 * 60 * 30) text = c.text; } catch { }
+      }
+      if (!text && icsUrl) {
+        try { const r = await fetch(icsUrl); if (r.ok) text = await r.text(); localStorage.setItem(ICS_CACHE_KEY, JSON.stringify({ ts: Date.now(), text })); } catch { }
+      }
+      if (!text) return;
+      const events = [];
+      const lines = text.split(/\r?\n/);
+      let cur = null;
+      for (const ln of lines) {
+        if (ln === 'BEGIN:VEVENT') { cur = {}; }
+        else if (ln === 'END:VEVENT') { if (cur) events.push(cur), cur = null; }
+        else if (cur) {
+          const m = ln.match(/^(\w+);?.*:(.*)$/);
+          if (m) cur[m[1]] = (m[2] || '').trim();
+        }
+      }
+      const toDate = (v) => {
+        if (!v) return null;
+        const m = v.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})Z?)?$/);
+        if (!m) return null;
+        const [_, y, mo, d, hh = '00', mm = '00', ss = '00'] = m;
+        return new Date(Date.UTC(+y, +mo - 1, +d, +hh, +mm, +ss));
+      };
+      const now = new Date();
+      const upcoming = events.map(e => ({
+        start: toDate(e.DTSTART),
+        end: toDate(e.DTEND),
+        sum: e.SUMMARY || '',
+      })).filter(e => e.start && e.end && e.end > now).sort((a, b) => a.start - b.start).slice(0, 3);
+      let cal = document.getElementById('icsCard');
+      if (!cal) { cal = el('div', 'card stat'); cal.id = 'icsCard'; $('.widgets').appendChild(cal); }
+      cal.innerHTML = `<i class="fa-regular fa-calendar" style="color: var(--brand);"></i><div><div class="val">${upcoming.length ? upcoming[0].sum : 'Keine Termine'}</div><div class="lbl">Kalender</div></div>`;
+    }
+
+    // ===== DRAG & DROP REORDER =====
+    function initDnD() {
+      $$('.apps .tile').forEach(t => {
+        t.addEventListener('dragstart', e => { t.classList.add('dragging'); e.dataTransfer.setData('text/plain', t.dataset.key); });
+        t.addEventListener('dragend', () => t.classList.remove('dragging'));
+      });
+      $$('.apps').forEach(grid => {
+        grid.addEventListener('dragover', e => {
+          e.preventDefault();
+          const after = getDragAfterElement(grid, e.clientY, e.clientX);
+          const dragging = $('.tile.dragging');
+          if (!dragging) return;
+          if (after == null) { grid.appendChild(dragging); }
+          else { grid.insertBefore(dragging, after); }
+        });
+        grid.addEventListener('drop', () => persistOrder());
+      });
+    }
+    function getDragAfterElement(container, y, x) {
+      const els = [...container.querySelectorAll('.tile:not(.dragging)')];
+      return els.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) return { offset, element: child };
+        else return closest;
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+    function persistOrder() {
+      const newList = [];
+      $$('.section').forEach(sec => {
+        const cat = sec.querySelector('summary strong').textContent;
+        sec.querySelectorAll('.tile').forEach(t => {
+          const [name, url] = t.dataset.key.split('@');
+          const found = APPS.find(a => a.name === name && a.url === url);
+          if (found) newList.push({ ...found, cat });
+        });
+      });
+      saveModel(newList);
+      APPS = newList;
+      render();
+    }
+
+    // ===== DOCK MAGNIFY =====
+    function initDockMagnify() {
+      if (!dockEl) return;
+      let animationFrameId = null;
+      dockEl.addEventListener('mousemove', e => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animationFrameId = requestAnimationFrame(() => {
+          const items = [...dockEl.children];
+          const rect = dockEl.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const max = 1.8, R = 140;
+          items.forEach(it => {
+            const r = it.getBoundingClientRect();
+            const cx = r.left + r.width / 2 - rect.left;
+            const d = Math.abs(cx - x);
+            const s = Math.max(1, max - (d / R));
+            it.style.transform = `scale(${s}) translateZ(0)`;
+          });
+        });
+      });
+      dockEl.addEventListener('mouseleave', () => {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        [...dockEl.children].forEach(it => it.style.transform = 'scale(1)');
+      });
+    }
+
+    // ===== INIT =====
+    function init() {
+      applyTheme();
+      applyWallpaper();
+      render();
+      updateStatuses();
+      setInterval(updateStatuses, 15000);
+      fetchWeather();
+      fetchICS();
+      initDockMagnify();
+      fetchAIGreeting();
+    }
+    init();
+
+    // ===== PWA =====
+    if ('serviceWorker' in navigator) {
+      const swCode = `self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>self.clients.claim());self.addEventListener('fetch',e=>{});`;
+      const blob = new Blob([swCode], { type: 'text/javascript' });
+      const url = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(url).catch(() => { });
+    }
+  </script>
+</body>
+</html>
