@@ -1,6 +1,7 @@
 (() => {
   const BUTTONS_KEY = 'board.quickButtons';
   const API_KEY_KEY = 'board.apiKey';
+  const PANEL_COLLAPSE_KEY = 'board.quickPanelCollapsed';
 
   function loadButtons() {
     try {
@@ -9,11 +10,11 @@
       const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed)) return [];
       return parsed
-        .filter((item) => item && typeof item.id === 'string')
-        .map((item) => ({
+        .filter(item => item && typeof item.id === 'string')
+        .map(item => ({
           id: item.id,
           label: String(item.label || '').trim(),
-          url: String(item.url || '').trim(),
+          url: String(item.url || '').trim()
         }));
     } catch {
       return [];
@@ -30,6 +31,14 @@
 
   function setApiKey(value) {
     localStorage.setItem(API_KEY_KEY, value);
+  }
+
+  function getPanelCollapsed() {
+    return localStorage.getItem(PANEL_COLLAPSE_KEY) === '1';
+  }
+
+  function setPanelCollapsed(flag) {
+    localStorage.setItem(PANEL_COLLAPSE_KEY, flag ? '1' : '0');
   }
 
   function ensureHttp(url) {
@@ -53,36 +62,88 @@
       return;
     }
 
-    buttons.forEach((btn) => {
+    buttons.forEach(btn => {
       const el = document.createElement('div');
       el.className = 'tile';
       el.dataset.id = btn.id;
       el.innerHTML = `
         <div class="tile-main">
-          <button class="action-btn" data-action="open" data-id="${btn.id}">
+          <button class="action-btn"
+            data-action="open"
+            data-id="${btn.id}">
             ${btn.label || 'Unnamed'}
           </button>
         </div>
         <div class="tile-controls">
-          <button class="small-btn" data-action="edit" data-id="${btn.id}" title="Bearbeiten">✏️</button>
-          <button class="small-btn" data-action="delete" data-id="${btn.id}" title="Entfernen">🗑️</button>
+          <button class="small-btn"
+            data-action="edit"
+            data-id="${btn.id}"
+            title="Bearbeiten">✏️</button>
+          <button class="small-btn"
+            data-action="delete"
+            data-id="${btn.id}"
+            title="Entfernen">🗑️</button>
         </div>
       `;
       container.appendChild(el);
     });
   }
 
+  function renderApiKeyStatus() {
+    const statusEl = document.querySelector('#apiKeyStatus');
+    const inputEl = document.querySelector('#apiKeyInput');
+    if (!statusEl || !inputEl) return;
+
+    const existing = getApiKey();
+
+    if (existing) {
+      inputEl.value = '********';
+      statusEl.classList.remove('bad');
+      statusEl.classList.add('ok');
+      statusEl.setAttribute('title', 'API-Key gespeichert');
+    } else {
+      if (inputEl.value === '********') {
+        inputEl.value = '';
+      }
+      statusEl.classList.remove('ok');
+      statusEl.classList.add('bad');
+      statusEl.setAttribute('title', 'kein API-Key gespeichert');
+    }
+  }
+
+  function renderPanelCollapsedState() {
+    const bodyEl = document.querySelector('#quickPanelBody');
+    const toggleBtn = document.querySelector('#quickPanelToggle');
+    const collapsed = getPanelCollapsed();
+
+    if (!bodyEl || !toggleBtn) return;
+
+    if (collapsed) {
+      bodyEl.hidden = true;
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      toggleBtn.textContent = '▼ Ausklappen';
+    } else {
+      bodyEl.hidden = false;
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      toggleBtn.textContent = '▲ Einklappen';
+    }
+  }
+
   function addButton(label, url) {
     const buttons = loadButtons();
     const id = crypto.randomUUID();
-    buttons.push({ id, label: label.trim(), url: ensureHttp(url.trim()) });
+    buttons.push({
+      id,
+      label: label.trim(),
+      url: ensureHttp(url.trim())
+    });
     saveButtons(buttons);
     renderButtons();
   }
 
   function editButton(id, newLabel, newUrl) {
     const buttons = loadButtons();
-    const idx = buttons.findIndex((b) => b.id === id);
+    const idx = buttons.findIndex(b => b.id === id);
     if (idx === -1) return;
 
     buttons[idx].label = newLabel.trim();
@@ -92,19 +153,20 @@
   }
 
   function deleteButton(id) {
-    const buttons = loadButtons().filter((b) => b.id !== id);
+    const buttons = loadButtons().filter(b => b.id !== id);
     saveButtons(buttons);
     renderButtons();
   }
 
-  document.addEventListener('click', (event) => {
+  document.addEventListener('click', event => {
     const target = event.target;
-    const action = target?.dataset?.action;
-    const id = target?.dataset?.id;
-    if (!action || !id) return;
+    if (!target || !('dataset' in target)) return;
+
+    const action = target.dataset.action;
+    const id = target.dataset.id;
 
     if (action === 'open') {
-      const btn = loadButtons().find((b) => b.id === id);
+      const btn = loadButtons().find(b => b.id === id);
       if (btn?.url) {
         window.open(btn.url, '_blank', 'noopener,noreferrer');
       }
@@ -112,7 +174,7 @@
     }
 
     if (action === 'edit') {
-      const current = loadButtons().find((b) => b.id === id);
+      const current = loadButtons().find(b => b.id === id);
       if (!current) return;
       const newLabel = prompt('Neuer Titel für Button:', current.label) ?? current.label;
       const newUrl = prompt('Neue URL für Button:', current.url) ?? current.url;
@@ -124,6 +186,13 @@
       if (confirm('Diesen Button wirklich löschen?')) {
         deleteButton(id);
       }
+      return;
+    }
+
+    if (target.id === 'quickPanelToggle') {
+      const collapsed = getPanelCollapsed();
+      setPanelCollapsed(!collapsed);
+      renderPanelCollapsedState();
     }
   });
 
@@ -131,7 +200,7 @@
     const form = document.querySelector('#new-button-form');
     if (!form) return;
 
-    form.addEventListener('submit', (evt) => {
+    form.addEventListener('submit', evt => {
       evt.preventDefault();
       const labelInput = form.querySelector('[name="label"]');
       const urlInput = form.querySelector('[name="url"]');
@@ -152,11 +221,6 @@
     const input = document.querySelector('#apiKeyInput');
     if (!saveBtn || !input) return;
 
-    const existing = getApiKey();
-    if (existing) {
-      input.value = '********';
-    }
-
     saveBtn.addEventListener('click', () => {
       const raw = input.value.trim();
       if (!raw || raw === '********') {
@@ -164,7 +228,7 @@
         return;
       }
       setApiKey(raw);
-      input.value = '********';
+      renderApiKeyStatus();
       alert('API-Key gespeichert (localStorage).');
     });
   }
@@ -177,7 +241,7 @@
     }
 
     const res = await fetch(endpointUrl, {
-      headers: { Authorization: `Bearer ${key}` },
+      headers: { Authorization: `Bearer ${key}` }
     });
 
     if (!res.ok) {
@@ -190,6 +254,8 @@
 
   function init() {
     renderButtons();
+    renderApiKeyStatus();
+    renderPanelCollapsedState();
     bindCreateButtonForm();
     bindApiKeySave();
   }

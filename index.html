@@ -92,6 +92,11 @@
     .action-btn:hover { background: var(--brand); }
     .small-btn { border: 0; border-radius: 10px; padding: 6px 8px; background: var(--glass); color: var(--text); cursor: pointer; box-shadow: var(--shadow); }
     .small-btn:hover { background: var(--glass-strong); }
+    .quick-actions-header-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+    .quick-actions-left { display: grid; gap: 4px; }
+    .quick-toggle-btn { background: var(--glass); border: 0; border-radius: 10px; padding: 6px 10px; color: var(--text); font-size: 13px; line-height: 1.2; cursor: pointer; box-shadow: var(--shadow); }
+    .quick-toggle-btn:hover { background: var(--glass-strong); }
+    .quick-panel-body[hidden] { display: none; }
     .quick-form { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(200px, 2fr) auto; gap: 10px; align-items: center; }
     .quick-form input { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.12); background: var(--glass); color: var(--text); }
     .quick-form input::placeholder { color: var(--muted); }
@@ -101,6 +106,10 @@
     .api-key-controls { display: flex; gap: 8px; }
     .api-key-box input { flex: 1; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.12); background: var(--glass); color: var(--text); }
     .api-key-box small { color: var(--muted); }
+    .api-key-status-row { display: flex; align-items: center; gap: 8px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 999px; box-shadow: 0 0 8px rgba(0, 0, 0, 0.6); }
+    .status-dot.ok { background: #4caf50; }
+    .status-dot.bad { background: #c62828; }
     @media (max-width: 720px) {
       .quick-form { grid-template-columns: 1fr; }
       .quick-form button { width: 100%; }
@@ -212,24 +221,37 @@
         <label class="toggle"><input type="checkbox" id="chkCompact"> Kompakter Modus</label>
         <label class="toggle"><input type="checkbox" id="chkCollapse"> Kategorien einklappen</label>
       </div>
-      <div class="card quick-actions">
-        <div class="quick-actions-header">
-          <h2>Schnellstart-Buttons</h2>
-          <p>Verwalte persönliche Links und speichere API-Keys direkt im Browser.</p>
-        </div>
-        <div id="button-container" class="quick-grid"></div>
-        <form id="new-button-form" class="quick-form">
-          <input name="label" placeholder="Button-Titel" autocomplete="off">
-          <input name="url" type="url" placeholder="https://ziel.url/" autocomplete="off">
-          <button type="submit" class="btn">➕ Hinzufügen</button>
-        </form>
-        <div class="api-key-box">
-          <label for="apiKeyInput">API-Key (lokal gespeichert)</label>
-          <div class="api-key-controls">
-            <input id="apiKeyInput" type="password" placeholder="API-Key eingeben" autocomplete="off">
-            <button id="saveKey" type="button" class="btn">API-Key speichern</button>
+      <div class="card quick-actions" id="quickActionsCard">
+        <div class="quick-actions-header-row">
+          <div class="quick-actions-left">
+            <h2>Schnellstart-Buttons</h2>
+            <p>Verwalte persönliche Links und speichere API-Keys direkt im Browser.</p>
           </div>
-          <small>Secrets werden maskiert und verbleiben ausschließlich im localStorage.</small>
+          <div class="quick-actions-right">
+            <button type="button" id="quickPanelToggle" class="quick-toggle-btn" aria-expanded="true">
+              ▲ Einklappen
+            </button>
+          </div>
+        </div>
+
+        <div class="quick-panel-body" id="quickPanelBody">
+          <div id="button-container" class="quick-grid"></div>
+
+          <form id="new-button-form" class="quick-form">
+            <input name="label" placeholder="Button-Titel" autocomplete="off">
+            <input name="url" type="url" placeholder="https://ziel.url/" autocomplete="off">
+            <button type="submit" class="btn">➕ Hinzufügen</button>
+          </form>
+
+          <div class="api-key-box">
+            <label for="apiKeyInput">API-Key (lokal gespeichert)</label>
+            <div class="api-key-controls api-key-status-row">
+              <input id="apiKeyInput" type="password" placeholder="API-Key eingeben" autocomplete="off">
+              <button id="saveKey" type="button" class="btn">API-Key speichern</button>
+              <span id="apiKeyStatus" class="status-dot bad" title="kein API-Key gespeichert"></span>
+            </div>
+            <small>Secrets werden maskiert und verbleiben ausschließlich im localStorage.</small>
+          </div>
         </div>
       </div>
       <div class="sections" id="sections"></div>
