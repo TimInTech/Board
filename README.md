@@ -15,5 +15,8 @@ Self-hosted HTML dashboard template for GitHub Pages.
 - Easy to customize
 - Zero dependencies
 
+## Contributing
+👉 Siehe [AGENTS.md](AGENTS.md) für Beiträge, Coding Style, Deploy und Security.
+
 ## License
 MIT – see LICENSE.
