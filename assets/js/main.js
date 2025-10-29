@@ -3,6 +3,7 @@
   const API_KEY_KEY = 'board.apiKey';
   const PANEL_COLLAPSE_KEY = 'board.quickPanelCollapsed';
 
+  // ---- storage helpers -------------------------------------------------
   function loadButtons() {
     try {
       const raw = localStorage.getItem(BUTTONS_KEY);
@@ -14,7 +15,8 @@
         .map(item => ({
           id: item.id,
           label: String(item.label || '').trim(),
-          url: String(item.url || '').trim()
+          url: String(item.url || '').trim(),
+          favorite: !!item.favorite
         }));
     } catch {
       return [];
@@ -47,6 +49,8 @@
     return `https://${url}`;
   }
 
+  // ---- rendering -------------------------------------------------------
+
   function renderButtons() {
     const container = document.querySelector('#button-container');
     if (!container) return;
@@ -57,12 +61,14 @@
     if (!buttons.length) {
       const empty = document.createElement('div');
       empty.className = 'quick-empty';
-      empty.textContent = 'Noch keine Buttons angelegt. Nutze das Formular, um deinen ersten Schnellzugriff hinzuzufügen.';
+      empty.textContent =
+        'Noch keine Buttons angelegt. Nutze das Formular, um deinen ersten Schnellzugriff hinzuzufügen.';
       container.appendChild(empty);
       return;
     }
 
     buttons.forEach(btn => {
+      const star = btn.favorite ? '★' : '☆';
       const el = document.createElement('div');
       el.className = 'tile';
       el.dataset.id = btn.id;
@@ -76,6 +82,10 @@
         </div>
         <div class="tile-controls">
           <button class="small-btn"
+            data-action="fav"
+            data-id="${btn.id}"
+            title="Favorit umschalten">${star}</button>
+          <button class="small-btn"
             data-action="edit"
             data-id="${btn.id}"
             title="Bearbeiten">✏️</button>
@@ -87,6 +97,27 @@
       `;
       container.appendChild(el);
     });
+
+    renderFavoritesDock();
+  }
+
+  function renderFavoritesDock() {
+    const dock = document.querySelector('#favorites-dock');
+    if (!dock) return;
+    dock.innerHTML = '';
+
+    const favorites = loadButtons().filter(b => b.favorite);
+
+    favorites.forEach(btn => {
+      const favEl = document.createElement('button');
+      favEl.className = 'fav-btn';
+      favEl.textContent = btn.label || 'Link';
+      favEl.dataset.id = btn.id;
+      favEl.dataset.action = 'open';
+      dock.appendChild(favEl);
+    });
+
+    // if no favorites, keep dock empty but visible so layout doesn't jump
   }
 
   function renderApiKeyStatus() {
@@ -115,7 +146,6 @@
     const bodyEl = document.querySelector('#quickPanelBody');
     const toggleBtn = document.querySelector('#quickPanelToggle');
     const collapsed = getPanelCollapsed();
-
     if (!bodyEl || !toggleBtn) return;
 
     if (collapsed) {
@@ -129,13 +159,16 @@
     }
   }
 
+  // ---- mutations -------------------------------------------------------
+
   function addButton(label, url) {
     const buttons = loadButtons();
     const id = crypto.randomUUID();
     buttons.push({
       id,
       label: label.trim(),
-      url: ensureHttp(url.trim())
+      url: ensureHttp(url.trim()),
+      favorite: false
     });
     saveButtons(buttons);
     renderButtons();
@@ -145,9 +178,8 @@
     const buttons = loadButtons();
     const idx = buttons.findIndex(b => b.id === id);
     if (idx === -1) return;
-
-    buttons[idx].label = newLabel.trim();
-    buttons[idx].url = ensureHttp(newUrl.trim());
+    buttons[idx].label = String(newLabel || '').trim();
+    buttons[idx].url = ensureHttp(String(newUrl || '').trim());
     saveButtons(buttons);
     renderButtons();
   }
@@ -158,10 +190,20 @@
     renderButtons();
   }
 
+  function toggleFavorite(id) {
+    const buttons = loadButtons();
+    const idx = buttons.findIndex(b => b.id === id);
+    if (idx === -1) return;
+    buttons[idx].favorite = !buttons[idx].favorite;
+    saveButtons(buttons);
+    renderButtons();
+  }
+
+  // ---- events ----------------------------------------------------------
+
   document.addEventListener('click', event => {
     const target = event.target;
     if (!target || !('dataset' in target)) return;
-
     const action = target.dataset.action;
     const id = target.dataset.id;
 
@@ -176,8 +218,10 @@
     if (action === 'edit') {
       const current = loadButtons().find(b => b.id === id);
       if (!current) return;
-      const newLabel = prompt('Neuer Titel für Button:', current.label) ?? current.label;
-      const newUrl = prompt('Neue URL für Button:', current.url) ?? current.url;
+      const newLabel =
+        prompt('Neuer Titel für Button:', current.label) ?? current.label;
+      const newUrl =
+        prompt('Neue URL für Button:', current.url) ?? current.url;
       editButton(id, newLabel, newUrl);
       return;
     }
@@ -189,17 +233,22 @@
       return;
     }
 
+    if (action === 'fav') {
+      toggleFavorite(id);
+      return;
+    }
+
     if (target.id === 'quickPanelToggle') {
       const collapsed = getPanelCollapsed();
       setPanelCollapsed(!collapsed);
       renderPanelCollapsedState();
+      return;
     }
   });
 
   function bindCreateButtonForm() {
     const form = document.querySelector('#new-button-form');
     if (!form) return;
-
     form.addEventListener('submit', evt => {
       evt.preventDefault();
       const labelInput = form.querySelector('[name="label"]');
@@ -220,7 +269,6 @@
     const saveBtn = document.querySelector('#saveKey');
     const input = document.querySelector('#apiKeyInput');
     if (!saveBtn || !input) return;
-
     saveBtn.addEventListener('click', () => {
       const raw = input.value.trim();
       if (!raw || raw === '********') {
@@ -239,16 +287,13 @@
       alert('Bitte zuerst einen API-Key speichern.');
       throw new Error('missing api key');
     }
-
     const res = await fetch(endpointUrl, {
       headers: { Authorization: `Bearer ${key}` }
     });
-
     if (!res.ok) {
       console.warn('Request fehlgeschlagen:', res.status);
       throw new Error(`request failed ${res.status}`);
     }
-
     return res.json();
   }
 
