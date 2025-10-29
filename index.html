@@ -54,24 +54,51 @@
     .wallpaper { position: fixed; inset: 0; background: center/cover no-repeat; filter: brightness(0.55) saturate(1.05); z-index: -2; }
     [data-theme="light"] .wallpaper { filter: brightness(0.9); }
     .vignette { position: fixed; inset: 0; background: radial-gradient(60% 60% at 50% 30%, transparent, rgba(0, 0, 0, 0.35)); z-index: -1; }
-    .container { height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
-    header { padding: 20px clamp(16px, 4vw, 48px); display: flex; align-items: center; gap: 14px; justify-content: space-between; }
-    .brand { display: flex; align-items: center; gap: 14px; }
-    .logo { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, var(--accent), var(--brand)); color: #0b1220; font-weight: 900; box-shadow: var(--shadow); }
-    .title { font-size: clamp(20px, 3vw, 32px); font-weight: 800; }
-    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .container { height: 100%; display: grid; grid-template-rows: auto 1fr auto; padding: 20px 0 0; }
+    .top-bar {
+      max-width: 1200px;
+      margin: 0 auto 16px;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
     .brand-headline {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: .04em;
-      color: var(--text);
       background: var(--glass);
+      box-shadow: var(--shadow);
+      color: var(--text);
       border-radius: 10px;
       padding: 6px 10px;
-      box-shadow: var(--shadow);
-      display: inline-block;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      line-height: 1.2;
     }
-    .chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); font-weight: 600; font-size: 13px; }
+    .top-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .top-link-btn {
+      background: var(--glass);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.2;
+      text-decoration: none;
+      border: 0;
+      cursor: pointer;
+    }
+    .top-link-btn:hover {
+      background: var(--glass-strong);
+      color: var(--text);
+    }
+    .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .btn { cursor: pointer; border: 0; border-radius: 12px; padding: 10px 14px; color: var(--text); background: var(--glass); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
     .btn:hover { background: var(--glass-strong); }
     .btn:disabled { cursor: not-allowed; opacity: 0.7; }
@@ -91,8 +118,14 @@
     .toggle { display: inline-flex; gap: 8px; align-items: center; }
     .toggle input { accent-color: var(--accent); }
     .quick-actions { max-width: 1200px; margin: 0 auto 24px; padding: 18px; display: grid; gap: 16px; }
-    .quick-actions-header h2 { margin: 0; font-size: 18px; }
-    .quick-actions-header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .quick-actions-header-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+    .quick-actions-left { display: grid; gap: 4px; }
+    .quick-actions-left h2 { margin: 0; font-size: 18px; }
+    .quick-actions-left p { margin: 0; color: var(--muted); font-size: 13px; }
+    .quick-actions-right { display: flex; align-items: center; }
+    .quick-toggle-btn { background: var(--glass); border: 0; border-radius: 10px; padding: 6px 10px; color: var(--text); font-size: 13px; line-height: 1.2; cursor: pointer; box-shadow: var(--shadow); }
+    .quick-toggle-btn:hover { background: var(--glass-strong); }
+    .quick-panel-body[hidden] { display: none; }
     .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .quick-grid .tile { justify-items: stretch; padding: 16px; cursor: default; gap: 12px; }
     .quick-grid .tile:hover { transform: none; }
@@ -103,11 +136,6 @@
     .action-btn:hover { background: var(--brand); }
     .small-btn { border: 0; border-radius: 10px; padding: 6px 8px; background: var(--glass); color: var(--text); cursor: pointer; box-shadow: var(--shadow); }
     .small-btn:hover { background: var(--glass-strong); }
-    .quick-actions-header-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; }
-    .quick-actions-left { display: grid; gap: 4px; }
-    .quick-toggle-btn { background: var(--glass); border: 0; border-radius: 10px; padding: 6px 10px; color: var(--text); font-size: 13px; line-height: 1.2; cursor: pointer; box-shadow: var(--shadow); }
-    .quick-toggle-btn:hover { background: var(--glass-strong); }
-    .quick-panel-body[hidden] { display: none; }
     .quick-form { display: grid; grid-template-columns: minmax(140px, 1fr) minmax(200px, 2fr) auto; gap: 10px; align-items: center; }
     .quick-form input { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.12); background: var(--glass); color: var(--text); }
     .quick-form input::placeholder { color: var(--muted); }
@@ -155,16 +183,18 @@
       border-radius: 12px;
       padding: 8px 12px;
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
+      gap: 8px;
       z-index: 9999;
+      min-width: 60px;
+      min-height: 32px;
     }
     .favorites-dock .fav-btn {
       min-width: 32px;
       max-width: 120px;
       white-space: nowrap;
-      text-overflow: ellipsis;
       overflow: hidden;
+      text-overflow: ellipsis;
       border: 0;
       border-radius: 10px;
       padding: 8px 10px;
@@ -172,8 +202,8 @@
       font-weight: 600;
       background: var(--glass-strong);
       color: var(--text);
-      cursor: pointer;
       box-shadow: var(--shadow);
+      cursor: pointer;
     }
     .favorites-dock .fav-btn:hover {
       background: var(--accent);
@@ -197,13 +227,14 @@
   <div class="wallpaper" id="wallpaper" aria-hidden="true"></div>
   <div class="vignette" aria-hidden="true"></div>
   <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo"><i class="fa-solid fa-robot"></i></div>
-        <div class="title" id="boardTitle">TimInTech</div>
-      </div>
-      <div class="header-actions">
-        <div class="brand-headline">Dashboard by TimInTech</div>
+    <header class="top-bar">
+      <div class="brand-headline">Dashboard by TimInTech</div>
+      <nav class="top-links">
+        <a class="top-link-btn" href="https://timintech.de" target="_blank" rel="noopener noreferrer">🌐 timintech.de</a>
+        <a class="top-link-btn" href="https://github.com/TimInTech/Board" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="top-link-btn" href="https://buymeacoffee.com/timintech" target="_blank" rel="noopener noreferrer">☕ Buy me a coffee</a>
+      </nav>
+      <div class="top-actions">
         <button class="btn" id="btnImport" title="Import"><i class="fa-solid fa-file-import"></i></button>
         <button class="btn" id="btnExport" title="Export"><i class="fa-solid fa-file-export"></i></button>
         <button class="btn" id="btnAdd" title="App hinzufügen"><i class="fa-solid fa-plus"></i></button>
@@ -303,8 +334,6 @@
       <div class="dock" id="dock"></div>
     </div>
   </div>
-
-  <div id="favorites-dock" class="favorites-dock"></div>
 
   <!-- Modal: Add -->
   <div class="modal" id="modalAdd">
@@ -701,12 +730,6 @@
         subGreetingEl.textContent = 'Suche, starte und überwache deine Dienste zentral.';
       }
     }
-    const cpu = $('#liveCpu span'), mem = $('#liveMem span'), sto = $('#liveSto span');
-    setInterval(() => {
-      cpu.textContent = `CPU: ${(10 + Math.random() * 40).toFixed(1)}%`;
-      mem.textContent = `RAM: ${(2 + Math.random() * 14).toFixed(1)} GB`;
-      sto.textContent = `Disk: ${(8 + Math.random() * 240).toFixed(1)} GB`;
-    }, 2500);
     function tickClock() { const d = new Date(); const hh = String(d.getHours()).padStart(2, '0'); const mm = String(d.getMinutes()).padStart(2, '0'); $('#clock').textContent = `${hh}:${mm}`; }
     tickClock();
     setInterval(tickClock, 30 * 1000);
@@ -1274,6 +1297,7 @@
       navigator.serviceWorker.register(url).catch(() => { });
     }
   </script>
+  <div id="favorites-dock" class="favorites-dock"></div>
   <script src="assets/js/main.js"></script>
 </body>
 </html>

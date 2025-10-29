@@ -3,7 +3,7 @@
   const API_KEY_KEY = 'board.apiKey';
   const PANEL_COLLAPSE_KEY = 'board.quickPanelCollapsed';
 
-  // ---- storage helpers -------------------------------------------------
+  // --- storage helpers -------------------------------------------------
   function loadButtons() {
     try {
       const raw = localStorage.getItem(BUTTONS_KEY);
@@ -49,7 +49,24 @@
     return `https://${url}`;
   }
 
-  // ---- rendering -------------------------------------------------------
+  // --- rendering -------------------------------------------------------
+
+  function renderFavoritesDock() {
+    const dock = document.querySelector('#favorites-dock');
+    if (!dock) return;
+
+    dock.innerHTML = '';
+    const favorites = loadButtons().filter(b => b.favorite);
+
+    favorites.forEach(btn => {
+      const favEl = document.createElement('button');
+      favEl.className = 'fav-btn';
+      favEl.textContent = btn.label || 'Link';
+      favEl.dataset.id = btn.id;
+      favEl.dataset.action = 'open';
+      dock.appendChild(favEl);
+    });
+  }
 
   function renderButtons() {
     const container = document.querySelector('#button-container');
@@ -61,9 +78,9 @@
     if (!buttons.length) {
       const empty = document.createElement('div');
       empty.className = 'quick-empty';
-      empty.textContent =
-        'Noch keine Buttons angelegt. Nutze das Formular, um deinen ersten Schnellzugriff hinzuzufügen.';
+      empty.textContent = 'Noch keine Buttons angelegt. Nutze das Formular, um deinen ersten Schnellzugriff hinzuzufügen.';
       container.appendChild(empty);
+      renderFavoritesDock();
       return;
     }
 
@@ -99,25 +116,6 @@
     });
 
     renderFavoritesDock();
-  }
-
-  function renderFavoritesDock() {
-    const dock = document.querySelector('#favorites-dock');
-    if (!dock) return;
-    dock.innerHTML = '';
-
-    const favorites = loadButtons().filter(b => b.favorite);
-
-    favorites.forEach(btn => {
-      const favEl = document.createElement('button');
-      favEl.className = 'fav-btn';
-      favEl.textContent = btn.label || 'Link';
-      favEl.dataset.id = btn.id;
-      favEl.dataset.action = 'open';
-      dock.appendChild(favEl);
-    });
-
-    // if no favorites, keep dock empty but visible so layout doesn't jump
   }
 
   function renderApiKeyStatus() {
@@ -159,7 +157,7 @@
     }
   }
 
-  // ---- mutations -------------------------------------------------------
+  // --- mutations -------------------------------------------------------
 
   function addButton(label, url) {
     const buttons = loadButtons();
@@ -199,7 +197,7 @@
     renderButtons();
   }
 
-  // ---- events ----------------------------------------------------------
+  // --- events ----------------------------------------------------------
 
   document.addEventListener('click', event => {
     const target = event.target;
@@ -218,10 +216,8 @@
     if (action === 'edit') {
       const current = loadButtons().find(b => b.id === id);
       if (!current) return;
-      const newLabel =
-        prompt('Neuer Titel für Button:', current.label) ?? current.label;
-      const newUrl =
-        prompt('Neue URL für Button:', current.url) ?? current.url;
+      const newLabel = prompt('Neuer Titel für Button:', current.label) ?? current.label;
+      const newUrl = prompt('Neue URL für Button:', current.url) ?? current.url;
       editButton(id, newLabel, newUrl);
       return;
     }
@@ -299,6 +295,7 @@
 
   function init() {
     renderButtons();
+    renderFavoritesDock();
     renderApiKeyStatus();
     renderPanelCollapsedState();
     bindCreateButtonForm();
@@ -311,5 +308,6 @@
     init();
   }
 
+  // expose helper for debugging
   window.callProtectedEndpoint = callProtectedEndpoint;
 })();
