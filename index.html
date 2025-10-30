@@ -126,6 +126,18 @@
       overflow: hidden;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     .wallpaper {
       position: fixed;
       inset: 0;
@@ -159,7 +171,7 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 12px;
     }
 
@@ -173,12 +185,6 @@
       font-weight: 600;
       letter-spacing: .04em;
       line-height: 1.2;
-    }
-
-    .top-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
     }
 
     .top-link-btn {
@@ -217,6 +223,30 @@
       -webkit-backdrop-filter: blur(var(--blur));
       backdrop-filter: blur(var(--blur));
       box-shadow: var(--shadow);
+    }
+
+    .btn.is-active {
+      background: var(--accent);
+      color: #0b132b;
+    }
+
+    .btn-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      font-size: 18px;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent);
+      color: #0b132b;
     }
 
     .btn:hover {
@@ -367,6 +397,8 @@
     .quick-actions-right {
       display: flex;
       align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .quick-toggle-btn {
@@ -391,30 +423,72 @@
 
     .quick-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 12px;
     }
 
     .quick-grid .tile {
-      justify-items: stretch;
+      display: grid;
+      gap: 10px;
       padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      background: var(--glass);
+      box-shadow: var(--shadow);
       cursor: default;
+    }
+
+    .tile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 12px;
     }
 
-    .quick-grid .tile:hover {
-      -webkit-transform: none;
-      transform: none;
+    .tile-link {
+      flex: 1;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .quick-grid .tile-main {
-      display: flex;
+    .tile-link:hover,
+    .tile-link:focus {
+      text-decoration: underline;
     }
 
-    .quick-grid .tile-controls {
+    .tile-meta {
+      font-size: 13px;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tile-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       justify-content: flex-end;
+    }
+
+    .btn-star[aria-pressed="true"] {
+      color: var(--accent);
+    }
+
+    .btn-delete {
+      color: var(--danger);
+    }
+
+    .btn-delete:hover {
+      background: rgba(255, 107, 107, 0.2);
+    }
+
+    .btn-edit {
+      color: var(--brand);
     }
 
     .quick-empty {
@@ -422,36 +496,6 @@
       font-size: 13px;
       text-align: center;
       padding: 12px 0;
-    }
-
-    .action-btn {
-      flex: 1;
-      padding: 10px 12px;
-      border: 0;
-      border-radius: 12px;
-      background: var(--accent);
-      color: #0b132b;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
-    }
-
-    .action-btn:hover {
-      background: var(--brand);
-    }
-
-    .small-btn {
-      border: 0;
-      border-radius: 10px;
-      padding: 6px 8px;
-      background: var(--glass);
-      color: var(--text);
-      cursor: pointer;
-      box-shadow: var(--shadow);
-    }
-
-    .small-btn:hover {
-      background: var(--glass-strong);
     }
 
     .quick-form {
@@ -752,6 +796,55 @@
       z-index: 50;
     }
 
+    dialog.modal-dialog {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 0;
+      background: #0d1324;
+      color: var(--text);
+      width: min(420px, 90vw);
+    }
+
+    [data-theme="light"] dialog.modal-dialog {
+      background: #ffffffee;
+    }
+
+    dialog.modal-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.65);
+    }
+
+    .dialog-form {
+      display: grid;
+      gap: 14px;
+      padding: 20px;
+    }
+
+    .dialog-form h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .dialog-form label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .dialog-form input {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: var(--glass);
+      color: var(--text);
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
     .panel {
       width: min(780px, 95vw);
       background: #0d1324;
@@ -842,22 +935,20 @@
   <div class="container">
     <header class="top-bar">
       <div class="brand-headline">Dashboard by TimInTech</div>
-      <nav class="top-links">
-        <a class="top-link-btn" href="https://timintech.de" target="_blank" rel="noopener noreferrer">🌐
-          timintech.de</a>
+      <div class="top-actions">
+        <button class="btn" id="btnFavorites" type="button" aria-pressed="false"
+          aria-label="Nur Favoriten anzeigen">Favoriten (0)</button>
+        <button class="btn" id="btnSettings" type="button" title="Einstellungen" aria-label="Einstellungen">
+          <i class="fa-solid fa-gear" aria-hidden="true"></i>
+          <span class="sr-only">Einstellungen</span>
+        </button>
         <a class="top-link-btn" href="https://github.com/TimInTech/Board" target="_blank"
           rel="noopener noreferrer">GitHub</a>
-        <a class="top-link-btn" href="https://buymeacoffee.com/timintech" target="_blank" rel="noopener noreferrer">☕
-          Buy me a coffee</a>
-      </nav>
-      <div class="top-actions">
-        <button class="btn" id="btnImport" title="Import"><i class="fa-solid fa-file-import"></i></button>
-        <button class="btn" id="btnExport" title="Export"><i class="fa-solid fa-file-export"></i></button>
-        <button class="btn" id="btnAdd" title="App hinzufügen"><i class="fa-solid fa-plus"></i></button>
-        <button class="btn" id="btnSettings" title="Einstellungen"><i class="fa-solid fa-gear"></i></button>
-        <button class="btn" id="btnTheme" title="Theme umschalten"><i class="fa-solid fa-sun"></i></button>
+        <a class="top-link-btn" href="https://buymeacoffee.com/timintech" target="_blank"
+          rel="noopener noreferrer">☕ Buy me a coffee</a>
       </div>
     </header>
+    <div id="liveRegion" role="status" aria-live="polite" class="sr-only"></div>
     <main>
       <div class="greet">
         <h1 id="greeting">Willkommen.</h1>
@@ -910,6 +1001,10 @@
       <div class="toolbar">
         <label class="toggle"><input type="checkbox" id="chkCompact"> Kompakter Modus</label>
         <label class="toggle"><input type="checkbox" id="chkCollapse"> Kategorien einklappen</label>
+        <button class="btn btn-icon" id="btnTheme" type="button" title="Theme umschalten">
+          <i class="fa-solid fa-sun" aria-hidden="true"></i>
+          <span class="sr-only">Theme umschalten</span>
+        </button>
       </div>
       <div class="card quick-actions" id="quickActionsCard">
         <div class="quick-actions-header-row">
@@ -917,11 +1012,19 @@
             <h2>Schnellstart-Buttons</h2>
             <p>Verwalte persönliche Links und speichere API-Keys direkt im Browser.</p>
           </div>
-          <div class="quick-actions-right">
-            <button type="button" id="quickPanelToggle" class="quick-toggle-btn" aria-expanded="true">
-              ▲ Einklappen
-            </button>
-          </div>
+        <div class="quick-actions-right">
+          <button class="btn btn-icon" id="btnAdd" type="button" title="App hinzufügen">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            <span class="sr-only">App hinzufügen</span>
+          </button>
+          <button class="btn btn-icon" id="btnImport" type="button" title="Import">
+            <i class="fa-solid fa-file-import" aria-hidden="true"></i>
+            <span class="sr-only">Import</span>
+          </button>
+          <button type="button" id="quickPanelToggle" class="quick-toggle-btn" aria-expanded="true">
+            ▲ Einklappen
+          </button>
+        </div>
         </div>
 
         <div class="quick-panel-body" id="quickPanelBody">
@@ -933,19 +1036,35 @@
             <button type="submit" class="btn">➕ Hinzufügen</button>
           </form>
 
-          <div class="api-key-box">
-            <label for="apiKeyInput">API-Key (lokal gespeichert)</label>
-            <div class="api-key-controls api-key-status-row">
-              <input id="apiKeyInput" type="password" placeholder="API-Key eingeben" autocomplete="off">
-              <button id="saveKey" type="button" class="btn">API-Key speichern</button>
-              <span id="apiKeyStatus" class="status-dot bad" title="kein API-Key gespeichert"></span>
-            </div>
-            <small>Secrets werden maskiert und verbleiben ausschließlich im localStorage.</small>
-          </div>
         </div>
       </div>
       <div class="sections" id="sections"></div>
     </main>
+    <dialog id="shortcutEditDialog" class="modal-dialog" aria-labelledby="shortcutEditTitle">
+      <form id="shortcutEditForm" class="dialog-form">
+        <h3 id="shortcutEditTitle">Bookmark bearbeiten</h3>
+        <label for="shortcutEditLabel">Bezeichnung
+          <input id="shortcutEditLabel" name="label" required autocomplete="off">
+        </label>
+        <label for="shortcutEditUrl">URL
+          <input id="shortcutEditUrl" name="url" type="url" required autocomplete="off">
+        </label>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-secondary" data-action="cancel">Abbrechen</button>
+          <button type="submit" class="btn">Speichern</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="confirmDeleteDialog" class="modal-dialog" aria-labelledby="confirmTitle">
+      <div class="dialog-form">
+        <h3 id="confirmTitle">Löschen bestätigen</h3>
+        <p data-role="message">Soll der Eintrag gelöscht werden?</p>
+        <div class="dialog-actions">
+          <button type="button" class="btn btn-secondary" data-action="cancel">Abbrechen</button>
+          <button type="button" class="btn btn-delete" data-action="confirm">Löschen</button>
+        </div>
+      </div>
+    </dialog>
     <div class="dockWrap">
       <div class="dock" id="dock"></div>
     </div>
@@ -1085,6 +1204,20 @@
               </div>
               <button class="btn" id="btnGenWp"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
             </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="api-key-box">
+            <label for="apiKeyInput">Schnellstart API-Key (optional)</label>
+            <div class="api-key-controls api-key-status-row">
+              <input id="apiKeyInput" type="password" placeholder="API-Key eingeben" autocomplete="off">
+              <button id="saveKey" type="button" class="btn btn-secondary">Speichern</button>
+              <span id="apiKeyStatus" class="status-dot bad" title="kein API-Key gespeichert"></span>
+            </div>
+            <small>Secrets werden maskiert und verbleiben ausschließlich im localStorage.</small>
+          </div>
+          <div>
+            <p class="hint">Wird nur für Schnellstart-Integrationen verwendet. Der Key verlässt den Browser nicht.</p>
           </div>
         </div>
         <div class="row">
@@ -1251,7 +1384,15 @@
     function applyTheme() {
       const theme = SETTINGS.theme === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : SETTINGS.theme;
       document.documentElement.setAttribute('data-theme', theme);
-      document.getElementById('btnTheme').innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+      const btnTheme = document.getElementById('btnTheme');
+      if (btnTheme) {
+        const label = theme === 'dark' ? 'Auf helles Theme wechseln' : 'Auf dunkles Theme wechseln';
+        btnTheme.innerHTML = theme === 'dark'
+          ? '<i class="fa-solid fa-sun" aria-hidden="true"></i><span class="sr-only">Auf helles Theme wechseln</span>'
+          : '<i class="fa-solid fa-moon" aria-hidden="true"></i><span class="sr-only">Auf dunkles Theme wechseln</span>';
+        btnTheme.setAttribute('aria-label', label);
+        btnTheme.setAttribute('title', label);
+      }
       document.documentElement.classList.toggle('compact', !!SETTINGS.compact);
     }
     function applyWallpaper() {
@@ -1591,7 +1732,8 @@
     }
 
     // ===== EXPORT / BACKUP =====
-    $('#btnExport').addEventListener('click', () => openSettings());
+    const btnExport = $('#btnExport');
+    if (btnExport) btnExport.addEventListener('click', () => openSettings());
     $('#btnExportJSON').addEventListener('click', () => download('timintech-apps.json', JSON.stringify(loadModel(), null, 2)));
     $('#btnExportMD').addEventListener('click', () => {
       const groups = grouped();
@@ -1652,15 +1794,19 @@
       chkCompact.checked = !!s.compact;
       chkCollapse.checked = !!s.collapse;
       mSet.style.display = 'flex';
+      document.dispatchEvent(new CustomEvent('board:settings-open'));
     }
     btnSettings.onclick = openSettings;
     btnCloseSettings.onclick = () => mSet.style.display = 'none';
     mSet.addEventListener('click', e => { if (e.target === mSet) mSet.style.display = 'none'; });
-    $('#btnTheme').onclick = () => {
-      SETTINGS.theme = (SETTINGS.theme === 'dark') ? 'light' : (SETTINGS.theme === 'light') ? 'auto' : 'dark';
-      saveSettings(SETTINGS);
-      applyTheme();
-    };
+    const btnThemeToggle = $('#btnTheme');
+    if (btnThemeToggle) {
+      btnThemeToggle.onclick = () => {
+        SETTINGS.theme = (SETTINGS.theme === 'dark') ? 'light' : (SETTINGS.theme === 'light') ? 'auto' : 'dark';
+        saveSettings(SETTINGS);
+        applyTheme();
+      };
+    }
     chkCompact.onchange = () => { SETTINGS.compact = chkCompact.checked; saveSettings(SETTINGS); applyTheme(); };
     chkCollapse.onchange = () => { SETTINGS.collapse = chkCollapse.checked; saveSettings(SETTINGS); render(); };
     setWallpaper.addEventListener('change', async () => {
@@ -1931,7 +2077,7 @@
   </div>
 
   <script src="assets/js/audit.js"></script>
-  <script src="assets/js/main.js"></script>
+  <script type="module" src="assets/js/main.js"></script>
 </body>
 
 </html>

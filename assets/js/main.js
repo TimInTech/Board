@@ -1,313 +1,218 @@
-(() => {
-  const BUTTONS_KEY = 'board.quickButtons';
-  const API_KEY_KEY = 'board.apiKey';
-  const PANEL_COLLAPSE_KEY = 'board.quickPanelCollapsed';
+import { $, $$, announce, ensureProtocol } from './core/utils.js';
+import {
+  loadShortcuts,
+  saveShortcuts,
+  normalizeShortcut,
+  getApiKey,
+  setApiKey,
+  isPanelCollapsed,
+  setPanelCollapsed,
+} from './core/storage.js';
+import {
+  renderShortcuts,
+  renderFavoritesDock,
+  updateFavoritesToggle,
+  updatePanelCollapsed,
+} from './ui/render.js';
+import { openShortcutEditDialog, openConfirmDialog } from './ui/modals.js';
 
-  // --- storage helpers -------------------------------------------------
-  function loadButtons() {
-    try {
-      const raw = localStorage.getItem(BUTTONS_KEY);
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return [];
-      return parsed
-        .filter(item => item && typeof item.id === 'string')
-        .map(item => ({
-          id: item.id,
-          label: String(item.label || '').trim(),
-          url: String(item.url || '').trim(),
-          favorite: !!item.favorite
-        }));
-    } catch {
-      return [];
-    }
+const listContainer = $('#button-container');
+const favoritesDock = $('#favorites-dock');
+const favoritesToggle = $('#btnFavorites');
+const panelBody = $('#quickPanelBody');
+const panelToggle = $('#quickPanelToggle');
+const addForm = $('#new-button-form');
+const apiInput = $('#apiKeyInput');
+const apiSaveBtn = $('#saveKey');
+const apiStatus = $('#apiKeyStatus');
+
+let shortcuts = loadShortcuts();
+let showFavoritesOnly = false;
+
+function visibleShortcuts() {
+  const base = [...shortcuts];
+  return showFavoritesOnly ? base.filter(item => item.favorite) : base;
+}
+
+function persist(message) {
+  shortcuts = saveShortcuts(shortcuts);
+  render();
+  if (message) announce(message);
+}
+
+function render() {
+  const favoritesCount = shortcuts.filter(item => item.favorite).length;
+  renderShortcuts(listContainer, visibleShortcuts(), { favoritesOnly: showFavoritesOnly });
+  renderFavoritesDock(favoritesDock, shortcuts);
+  updateFavoritesToggle(favoritesToggle, showFavoritesOnly, favoritesCount);
+}
+
+function handleAdd(form) {
+  const labelInput = form.querySelector('[name="label"]');
+  const urlInput = form.querySelector('[name="url"]');
+  const label = labelInput?.value.trim() ?? '';
+  const url = ensureProtocol(urlInput?.value.trim() ?? '');
+  if (!label || !url) {
+    announce('Label und URL sind Pflichtfelder.');
+    return;
   }
+  shortcuts.push(normalizeShortcut({ label, url }));
+  persist('Schnellstart-Link gespeichert.');
+  form.reset();
+  labelInput?.focus();
+}
 
-  function saveButtons(buttons) {
-    localStorage.setItem(BUTTONS_KEY, JSON.stringify(buttons));
+function handleOpen(id) {
+  const entry = shortcuts.find(item => item.id === id);
+  if (entry?.url) window.open(entry.url, '_blank', 'noopener,noreferrer');
+}
+
+function handleToggleFavorite(id) {
+  const entry = shortcuts.find(item => item.id === id);
+  if (!entry) return;
+  entry.favorite = !entry.favorite;
+  persist(entry.favorite ? 'Favorit aktiviert.' : 'Favorit entfernt.');
+}
+
+async function handleEdit(id) {
+  const entry = shortcuts.find(item => item.id === id);
+  if (!entry) return;
+  const result = await openShortcutEditDialog(entry);
+  if (!result) return;
+  entry.label = result.label || entry.label;
+  entry.url = ensureProtocol(result.url || entry.url);
+  persist('Bookmark aktualisiert.');
+}
+
+async function handleDelete(id) {
+  const entry = shortcuts.find(item => item.id === id);
+  if (!entry) return;
+  const confirmed = await openConfirmDialog(`"${entry.label}" wirklich löschen?`);
+  if (!confirmed) return;
+  shortcuts = shortcuts.filter(item => item.id !== id);
+  persist('Bookmark gelöscht.');
+}
+
+function handleFavoritesToggle() {
+  showFavoritesOnly = !showFavoritesOnly;
+  render();
+  announce(showFavoritesOnly ? 'Favoritenansicht aktiviert.' : 'Alle Links eingeblendet.');
+}
+
+function renderApiKeyStatus() {
+  if (!apiInput || !apiStatus) return;
+  const stored = getApiKey();
+  if (stored) {
+    apiInput.value = '********';
+    apiStatus.classList.add('ok');
+    apiStatus.classList.remove('bad');
+    apiStatus.setAttribute('title', 'API-Key gespeichert');
+  } else {
+    if (apiInput.value === '********') apiInput.value = '';
+    apiStatus.classList.add('bad');
+    apiStatus.classList.remove('ok');
+    apiStatus.setAttribute('title', 'kein API-Key gespeichert');
   }
+}
 
-  function getApiKey() {
-    return localStorage.getItem(API_KEY_KEY) || '';
-  }
+function bindEvents() {
+  addForm?.addEventListener('submit', event => {
+    event.preventDefault();
+    handleAdd(addForm);
+  });
 
-  function setApiKey(value) {
-    localStorage.setItem(API_KEY_KEY, value);
-  }
-
-  function getPanelCollapsed() {
-    return localStorage.getItem(PANEL_COLLAPSE_KEY) === '1';
-  }
-
-  function setPanelCollapsed(flag) {
-    localStorage.setItem(PANEL_COLLAPSE_KEY, flag ? '1' : '0');
-  }
-
-  function ensureHttp(url) {
-    if (!url) return '';
-    if (/^https?:\/\//i.test(url)) return url;
-    return `https://${url}`;
-  }
-
-  // --- rendering -------------------------------------------------------
-
-  function renderFavoritesDock() {
-    const dock = document.querySelector('#favorites-dock');
-    if (!dock) return;
-
-    dock.innerHTML = '';
-    const favorites = loadButtons().filter(b => b.favorite);
-
-    favorites.forEach(btn => {
-      const favEl = document.createElement('button');
-      favEl.className = 'fav-btn';
-      favEl.textContent = btn.label || 'Link';
-      favEl.dataset.id = btn.id;
-      favEl.dataset.action = 'open';
-      dock.appendChild(favEl);
-    });
-  }
-
-  function renderButtons() {
-    const container = document.querySelector('#button-container');
-    if (!container) return;
-
-    container.innerHTML = '';
-    const buttons = loadButtons();
-
-    if (!buttons.length) {
-      const empty = document.createElement('div');
-      empty.className = 'quick-empty';
-      empty.textContent = 'Noch keine Buttons angelegt. Nutze das Formular, um deinen ersten Schnellzugriff hinzuzufügen.';
-      container.appendChild(empty);
-      renderFavoritesDock();
-      return;
-    }
-
-    buttons.forEach(btn => {
-      const star = btn.favorite ? '★' : '☆';
-      const el = document.createElement('div');
-      el.className = 'tile';
-      el.dataset.id = btn.id;
-      el.innerHTML = `
-        <div class="tile-main">
-          <button class="action-btn"
-            data-action="open"
-            data-id="${btn.id}">
-            ${btn.label || 'Unnamed'}
-          </button>
-        </div>
-        <div class="tile-controls">
-          <button class="small-btn"
-            data-action="fav"
-            data-id="${btn.id}"
-            title="Favorit umschalten">${star}</button>
-          <button class="small-btn"
-            data-action="edit"
-            data-id="${btn.id}"
-            title="Bearbeiten">✏️</button>
-          <button class="small-btn"
-            data-action="delete"
-            data-id="${btn.id}"
-            title="Entfernen">🗑️</button>
-        </div>
-      `;
-      container.appendChild(el);
-    });
-
-    renderFavoritesDock();
-  }
-
-  function renderApiKeyStatus() {
-    const statusEl = document.querySelector('#apiKeyStatus');
-    const inputEl = document.querySelector('#apiKeyInput');
-    if (!statusEl || !inputEl) return;
-
-    const existing = getApiKey();
-
-    if (existing) {
-      inputEl.value = '********';
-      statusEl.classList.remove('bad');
-      statusEl.classList.add('ok');
-      statusEl.setAttribute('title', 'API-Key gespeichert');
-    } else {
-      if (inputEl.value === '********') {
-        inputEl.value = '';
-      }
-      statusEl.classList.remove('ok');
-      statusEl.classList.add('bad');
-      statusEl.setAttribute('title', 'kein API-Key gespeichert');
-    }
-  }
-
-  function renderPanelCollapsedState() {
-    const bodyEl = document.querySelector('#quickPanelBody');
-    const toggleBtn = document.querySelector('#quickPanelToggle');
-    const collapsed = getPanelCollapsed();
-    if (!bodyEl || !toggleBtn) return;
-
-    if (collapsed) {
-      bodyEl.hidden = true;
-      toggleBtn.setAttribute('aria-expanded', 'false');
-      toggleBtn.textContent = '▼ Ausklappen';
-    } else {
-      bodyEl.hidden = false;
-      toggleBtn.setAttribute('aria-expanded', 'true');
-      toggleBtn.textContent = '▲ Einklappen';
-    }
-  }
-
-  // --- mutations -------------------------------------------------------
-
-  function addButton(label, url) {
-    const buttons = loadButtons();
-    const id = crypto.randomUUID();
-    buttons.push({
-      id,
-      label: label.trim(),
-      url: ensureHttp(url.trim()),
-      favorite: false
-    });
-    saveButtons(buttons);
-    renderButtons();
-  }
-
-  function editButton(id, newLabel, newUrl) {
-    const buttons = loadButtons();
-    const idx = buttons.findIndex(b => b.id === id);
-    if (idx === -1) return;
-    buttons[idx].label = String(newLabel || '').trim();
-    buttons[idx].url = ensureHttp(String(newUrl || '').trim());
-    saveButtons(buttons);
-    renderButtons();
-  }
-
-  function deleteButton(id) {
-    const buttons = loadButtons().filter(b => b.id !== id);
-    saveButtons(buttons);
-    renderButtons();
-  }
-
-  function toggleFavorite(id) {
-    const buttons = loadButtons();
-    const idx = buttons.findIndex(b => b.id === id);
-    if (idx === -1) return;
-    buttons[idx].favorite = !buttons[idx].favorite;
-    saveButtons(buttons);
-    renderButtons();
-  }
-
-  // --- events ----------------------------------------------------------
-
-  document.addEventListener('click', event => {
+  listContainer?.addEventListener('click', event => {
     const target = event.target;
-    if (!target || !('dataset' in target)) return;
+    if (!(target instanceof HTMLElement)) return;
+    const tile = target.closest('.tile');
+    const id = tile?.dataset.id;
     const action = target.dataset.action;
-    const id = target.dataset.id;
+    if (!id && action !== 'open') return;
 
-    if (action === 'open') {
-      const btn = loadButtons().find(b => b.id === id);
-      if (btn?.url) {
-        window.open(btn.url, '_blank', 'noopener,noreferrer');
-      }
-      return;
-    }
-
-    if (action === 'edit') {
-      const current = loadButtons().find(b => b.id === id);
-      if (!current) return;
-      const newLabel = prompt('Neuer Titel für Button:', current.label) ?? current.label;
-      const newUrl = prompt('Neue URL für Button:', current.url) ?? current.url;
-      editButton(id, newLabel, newUrl);
-      return;
-    }
-
-    if (action === 'delete') {
-      if (confirm('Diesen Button wirklich löschen?')) {
-        deleteButton(id);
-      }
-      return;
-    }
-
-    if (action === 'fav') {
-      toggleFavorite(id);
-      return;
-    }
-
-    if (target.id === 'quickPanelToggle') {
-      const collapsed = getPanelCollapsed();
-      setPanelCollapsed(!collapsed);
-      renderPanelCollapsedState();
-      return;
+    switch (action) {
+      case 'toggle-favorite':
+        handleToggleFavorite(id);
+        break;
+      case 'edit':
+        handleEdit(id);
+        break;
+      case 'delete':
+        handleDelete(id);
+        break;
+      case 'open':
+        event.preventDefault();
+        handleOpen(id);
+        break;
+      default:
+        if (target.tagName === 'A' && target.dataset.action === 'open' && id) {
+          event.preventDefault();
+          handleOpen(id);
+        }
+        break;
     }
   });
 
-  function bindCreateButtonForm() {
-    const form = document.querySelector('#new-button-form');
-    if (!form) return;
-    form.addEventListener('submit', evt => {
-      evt.preventDefault();
-      const labelInput = form.querySelector('[name="label"]');
-      const urlInput = form.querySelector('[name="url"]');
-      const label = labelInput?.value.trim() ?? '';
-      const url = urlInput?.value.trim() ?? '';
-      if (!label || !url) {
-        alert('Label und URL sind Pflicht.');
-        return;
-      }
-      addButton(label, url);
-      form.reset();
-      labelInput?.focus();
-    });
-  }
-
-  function bindApiKeySave() {
-    const saveBtn = document.querySelector('#saveKey');
-    const input = document.querySelector('#apiKeyInput');
-    if (!saveBtn || !input) return;
-    saveBtn.addEventListener('click', () => {
-      const raw = input.value.trim();
-      if (!raw || raw === '********') {
-        alert('Kein neuer API-Key eingegeben.');
-        return;
-      }
-      setApiKey(raw);
-      renderApiKeyStatus();
-      alert('API-Key gespeichert (localStorage).');
-    });
-  }
-
-  async function callProtectedEndpoint(endpointUrl) {
-    const key = getApiKey();
-    if (!key) {
-      alert('Bitte zuerst einen API-Key speichern.');
-      throw new Error('missing api key');
+  favoritesDock?.addEventListener('click', event => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target.dataset.action === 'open' && target.dataset.id) {
+      handleOpen(target.dataset.id);
     }
-    const res = await fetch(endpointUrl, {
-      headers: { Authorization: `Bearer ${key}` }
-    });
-    if (!res.ok) {
-      console.warn('Request fehlgeschlagen:', res.status);
-      throw new Error(`request failed ${res.status}`);
-    }
-    return res.json();
-  }
+  });
 
-  function init() {
-    renderButtons();
-    renderFavoritesDock();
+  favoritesToggle?.addEventListener('click', () => handleFavoritesToggle());
+
+  panelToggle?.addEventListener('click', () => {
+    const next = !isPanelCollapsed();
+    setPanelCollapsed(next);
+    updatePanelCollapsed(panelBody, panelToggle, next);
+  });
+
+  apiSaveBtn?.addEventListener('click', () => {
+    if (!apiInput) return;
+    const value = apiInput.value.trim();
+    if (!value || value === '********') {
+      announce('Kein neuer API-Key eingegeben.');
+      return;
+    }
+    setApiKey(value);
     renderApiKeyStatus();
-    renderPanelCollapsedState();
-    bindCreateButtonForm();
-    bindApiKeySave();
-  }
+    announce('API-Key gespeichert.');
+  });
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
-  } else {
-    init();
-  }
+  apiInput?.addEventListener('input', () => {
+    if (apiInput.value === '********') apiInput.value = '';
+  });
 
-  // expose helper for debugging
-  window.callProtectedEndpoint = callProtectedEndpoint;
-})();
+  document.addEventListener('board:settings-open', () => {
+    renderApiKeyStatus();
+  });
+}
+
+function init() {
+  const collapsed = isPanelCollapsed();
+  updatePanelCollapsed(panelBody, panelToggle, collapsed);
+  render();
+  renderApiKeyStatus();
+  bindEvents();
+}
+
+init();
+
+export async function callProtectedEndpoint(endpointUrl) {
+  const key = getApiKey();
+  if (!key) {
+    announce('Bitte zuerst einen API-Key speichern.');
+    throw new Error('missing api key');
+  }
+  const response = await fetch(endpointUrl, {
+    headers: { Authorization: `Bearer ${key}` },
+  });
+  if (!response.ok) {
+    throw new Error(`request failed ${response.status}`);
+  }
+  return response.json();
+}
+
+window.board = window.board || {};
+window.board.callProtectedEndpoint = callProtectedEndpoint;
