@@ -1,49 +1,157 @@
-# Repository Guidelines
+# AGENTS.md — Repository Guidelines
 
-## Project Structure & Module Organization
-The interactive dashboard lives in `index.html`, with historical variants kept as `.bak` files for reference while reviewing changes. Shared assets belong under `assets/`—use `assets/css` for stylesheets, `assets/js` for optional scripts, and replace `assets/favicon.png` if you update branding. Keep static SEO helpers (`404.html`, `robots.txt`, `sitemap.xml`, `.well-known/`) and optional meta presets in `meta-snippet.html` aligned with the main layout. GitHub Actions live in `.github/workflows`, and any documentation intended for GitHub Pages’ `/docs` deployment should stay in `docs/`.
+> Plan-first. Idempotent. Dry-Run. Audits sichtbar. Keine Secrets im Repo.
 
-## Build, Test, and Development Commands
-No bundler is required; serve the site directly to preview layout changes.
+## 1) Core Principles
+
+* **Plan-first:** Ziel, Risiken, Diff-Vorschau vor Änderungen.
+* **Idempotent:** Wiederholtes Ausführen erzeugt keine Doppelungen.
+* **Previews & Linting:** Vor Merge lokal prüfen.
+* **Audits sichtbar:** Reports nach `.audit/` ablegen und committen, wenn relevant.
+* **Secrets:** Niemals echte API-Keys einchecken.
+
+## 2) Project Layout
+
+* Haupt-Dashboard: `index.html`
+* Assets: `assets/` (`assets/css`, `assets/js`, `assets/favicon.png`)
+* Statische Helfer: `404.html`, `robots.txt`, `sitemap.xml`, `.well-known/`, `meta-snippet.html`
+* CI: `.github/workflows/`
+* Doku für Pages: `docs/`
+* Audits/Reports: `.audit/`
+* **Modularisierung (schrittweise, empfohlen):**
+
+  ```
+  assets/js/
+    core/      # storage.js, theme.js, utils.js (elSafe, normUrl, domain, announce)
+    features/  # import.js, search.js, ai.js, weather.js
+    ui/        # render.js, modals.js, dnd.js
+  main.js      # Bootstrap/Orchestrierung
+  ```
+
+## 3) Dev Workflow
+
+Vorschau starten:
+
 ```bash
+cd ./           # ins Repo
 python -m http.server 8080
 ```
-Lint HTML before pushing to keep CI quiet and catch syntax issues.
+
+HTML linten und Audit exportieren:
+
 ```bash
+cd ./
 npx htmlhint "**/*.html"
-```
-Run the linter from the repository root; it mirrors `.github/workflows/htmlhint.yml`, which intentionally treats warnings as non-blocking but should pass cleanly locally.
-```bash
 npx htmlhint "**/*.html" --format json --output .audit/htmlhint.json
 ```
-The JSON report feeds into our audit trail—commit it alongside feature work when it flags new violations you had to suppress.
 
-## Coding Style & Naming Conventions
-Use two-space indentation for HTML and inline `<style>` blocks to match the existing format. Extend the `:root` CSS custom properties instead of hard-coding colors, and prefer semantic class names (`card`, `tile`, `dock`) that reflect layout roles. Keep attribute hooks (`data-theme`, `data-compact`) consistent when introducing new interactions, and group related CSS rules so diff reviews stay focused.
+Optionale CI-/A11y-Reports:
 
-## Testing Guidelines
-HTMLHint is the canonical validator; add temporary rules via an `.htmlhintrc` in the root if a feature requires relaxed checks. Name new demo sections with clear IDs (e.g., `id="metrics-grid"`) so downstream smoke tests or analytics snippets can target them predictably. Before opening a PR, run through the layout in both default and compact modes to ensure responsive breakpoints still render cleanly.
+```bash
+mkdir -p .audit
+gh run list --limit 10 --json name,durationMs,status > .audit/ci_runs.json
+# optional, falls vorhanden:
+# node scripts/a11y_check.mjs > .audit/a11y.html
+```
 
-## Commit & Pull Request Guidelines
-Follow the existing Conventional Commit pattern: `type(scope): short imperative summary` (e.g., `feat(ui): add uptime tile`). Keep commits scoped to a single change-set, update `CHANGELOG.md` when you ship notable improvements, and include before/after screenshots for visual updates. PRs should state the motivation, list any configuration changes (such as updated fonts or external API keys), and reference GitHub issues or discussions when applicable.
+## 4) Coding Guidance
 
-## Deployment & Configuration Tips
-Merges to `main` publish automatically via `.github/workflows/pages.yml`. If you adjust the content root, update `actions/upload-pages-artifact@v3` accordingly. Use `.nojekyll` to keep asset paths untouched and verify any new external embeds support HTTPS, since GitHub Pages enforces it and mixed content will silently fail.
+* HTML- und Inline-`<style>`-Einrückung: **2 Leerzeichen**
+* Farben nur über `:root`-CSS-Variablen erweitern
+* **Kein untrusted `innerHTML`**. Hilfsfunktion verwenden:
 
-## Security Checklist
-- Review Dependabot alerts weekly and patch supply-chain CVEs before the next release window.
-- Keep GitHub Advanced Security (secret scanning, code scanning) alerts at zero; investigate new findings immediately.
-- Never store real API keys in the repository—use the new quick actions card or personal `.env` files for local testing.
-
-## Observability & Metrics
-- Track CI health by exporting recent runs:
-  ```bash
-  mkdir -p .audit
-  gh run list --limit 10 --json name,durationMs,status > .audit/ci_runs.json
+  ```js
+  export function elSafe(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
   ```
-- Capture HTMLHint trends by checking `.audit/htmlhint.json` into the same folder when relevant.
-- Note noteworthy availability or latency updates in `CHANGELOG.md` so downstream consumers can correlate UX shifts.
+
+* Semantische Klassen: `card`, `tile`, `dock`
+* Attribut-Hooks konsistent: `data-theme`, `data-compact`
+
+## 5) Security & A11y
+
+**CSP aktivieren** (in `<head>`):
+
+```html
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self';
+           script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+           font-src 'self' https://fonts.gstatic.com;
+           img-src 'self' data: https:;
+           connect-src 'self' https://api.openweathermap.org https://generativelanguage.googleapis.com https://source.unsplash.com;
+           frame-src 'none'; object-src 'none';">
+```
+
+**API-Keys:** Nur lokal, nie im Repo. Im UI klar warnen, dass Keys lokal gespeichert werden.
+
+**Netzwerk-Checks drosseln:** Batching, Timeout 5 s, Exponential Backoff bis 5 min.
+
+**A11y:**
+
+* Tiles: `role="button"`, `tabindex="0"`, Enter/Space auslösen
+* Icon-Buttons: `aria-label` + `title`
+* Modals: Fokus-Management, Escape schließt
+* Kontrast: mindestens WCAG AA
+* Live-Region:
+
+  ```html
+  <div role="status" aria-live="polite" id="liveRegion" class="sr-only"></div>
+  ```
+
+## 6) Process
+
+* **Conventional Commits:** `type(scope): summary`
+  Beispiele: `feat(ui): add uptime tile`, `fix(security): sanitize imports`
+* **CHANGELOG.md** bei merklichen Änderungen pflegen
+* **PR-Beifang:** Screenshots (vor/nach), relevante `.audit/*`-Reports beilegen
+* **Checklists** strikt nutzen (siehe unten)
+
+## 7) Checklisten
+
+### Vor Pull Request
+
+* [ ] Lokale Vorschau: `python -m http.server 8080` geprüft (Default + Compact)
+* [ ] `npx htmlhint "**/*.html"` ohne Fehler
+* [ ] Kein untrusted `innerHTML`; `elSafe` genutzt
+* [ ] A11y: Tastaturbedienung, ARIA-Labels, Fokus in Modals
+* [ ] Netzwerk-Checks gedrosselt
+* [ ] `.audit/htmlhint.json` und ggf. `.audit/ci_runs.json` aktualisiert
+* [ ] Screenshots erstellt und im PR verlinkt
+
+### Vor Release
+
+* [ ] CSP-Tag vorhanden und korrekt
+* [ ] Keine Secrets im Repo/PR
+* [ ] Pages-Preview ohne Mixed-Content-Warnungen
+* [ ] `CHANGELOG.md` aktualisiert
+
+## 8) Hinweise zu Performance & Persistenz
+
+* Bilder/Favicons: `loading="lazy"`
+* Große Wallpaper nicht in `localStorage`, sondern IndexedDB
+* Requests bündeln, Polling minimieren
+
+## 9) Notfall & Rollback
+
+Vor riskanten Merges Tag setzen:
+
+```bash
+git tag -s pre-release-$(date +%Y%m%d)
+git push --tags
+```
+
+Rollback:
+
+```bash
+git revert <merge_commit_sha>
+git push
+```
 
 ---
 
-👉 Siehe auch `README.md` für das Projekt-Intro. Verlinke aus neuen Dokumentationen zurück auf `AGENTS.md`, damit Contributor:innen die Richtlinien schnell finden.
+👉 Lies auch `README.md` für das Projekt-Intro. Verlinke neue Dokus zurück auf **AGENTS.md**, damit Richtlinien schnell auffindbar bleiben.

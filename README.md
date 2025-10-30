@@ -1,6 +1,6 @@
-![Deploy](https://github.com/TimInTech/Board/actions/workflows/pages.yml/badge.svg)
-
 # 🚀 Board
+
+![Deploy](https://github.com/TimInTech/Board/actions/workflows/pages.yml/badge.svg)
 
 Self-hosted HTML dashboard template for GitHub Pages.
 

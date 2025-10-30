@@ -99,7 +99,7 @@
       color: var(--text);
     }
     .top-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .btn { cursor: pointer; border: 0; border-radius: 12px; padding: 10px 14px; color: var(--text); background: var(--glass); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
+    .btn { cursor: pointer; border: 0; border-radius: 12px; padding: 10px 14px; color: var(--text); background: var(--glass); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
     .btn:hover { background: var(--glass-strong); }
     .btn:disabled { cursor: not-allowed; opacity: 0.7; }
     main { padding: 0 clamp(16px, 4vw, 48px) 120px; overflow: auto; }
@@ -107,12 +107,15 @@
     .greet h1 { font-size: clamp(24px, 4vw, 44px); margin: 0 0 8px; text-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
     .greet p { margin: 0; color: var(--muted); }
     .widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px auto 24px; max-width: 1200px; }
-    .card { background: var(--card); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
+    .card { background: var(--card); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--radius); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
     .stat { padding: 14px; display: flex; align-items: center; gap: 12px; }
     .stat .val { font-size: 22px; font-weight: 800; }
     .stat .lbl { font-size: 12px; color: var(--muted); }
+    .stat-icon-accent { color: var(--accent); }
+    .stat-icon-brand { color: var(--brand); }
+    .stat-icon-ok { color: var(--ok); }
     .search { margin: 8px auto 16px; max-width: 1000px; display: flex; gap: 10px; }
-    .field { flex: 1; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
+    .field { flex: 1; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); -webkit-backdrop-filter: blur(var(--blur)); backdrop-filter: blur(var(--blur)); box-shadow: var(--shadow); }
     .search input { width: 100%; background: transparent; border: 0; outline: 0; color: var(--text); font-size: 15px; }
     .toolbar { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin: 0 auto 10px; max-width: 1200px; }
     .toggle { display: inline-flex; gap: 8px; align-items: center; }
@@ -140,6 +143,7 @@
     .quick-form input { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.12); background: var(--glass); color: var(--text); }
     .quick-form input::placeholder { color: var(--muted); }
     .quick-form button { height: 100%; }
+    .btn-wide { width: 100%; }
     .api-key-box { display: grid; gap: 6px; }
     .api-key-box label { font-size: 13px; color: var(--muted); }
     .api-key-controls { display: flex; gap: 8px; }
@@ -160,7 +164,7 @@
     details > summary { list-style: none; cursor: pointer; padding: 10px 12px; color: var(--muted); display: flex; gap: 10px; align-items: center; }
     details > summary::-webkit-details-marker { display: none; }
     .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--tile-size), 1fr)); gap: 12px; padding: 0 12px 12px; }
-    .tile { position: relative; display: grid; justify-items: center; gap: 8px; padding: 12px 8px; border-radius: 16px; text-align: center; user-select: none; cursor: grab; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(calc(var(--blur) - 4px)); transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease; box-shadow: var(--shadow); }
+    .tile { position: relative; display: grid; justify-items: center; gap: 8px; padding: 12px 8px; border-radius: 16px; text-align: center; -webkit-user-select: none; user-select: none; cursor: grab; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.12); -webkit-backdrop-filter: blur(calc(var(--blur) - 4px)); backdrop-filter: blur(calc(var(--blur) - 4px)); transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease; box-shadow: var(--shadow); }
     .tile:active { cursor: grabbing; }
     .tile:hover { transform: translateY(-3px); background: var(--glass-strong); border-color: rgba(255, 255, 255, 0.2); }
     .icoWrap { position: relative; }
@@ -170,7 +174,7 @@
     .url { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
     .badge { position: absolute; right: -4px; bottom: -4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(12, 16, 28, 0.8); }
     .dockWrap { position: fixed; left: 0; right: 0; bottom: 16px; display: grid; place-items: center; pointer-events: none; }
-    .dock { pointer-events: auto; display: flex; gap: 10px; padding: 10px 14px; border-radius: 22px; background: rgba(12, 16, 28, 0.55); border: 1px solid rgba(255, 255, 255, 0.12); backdrop-filter: blur(18px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
+    .dock { pointer-events: auto; display: flex; gap: 10px; padding: 10px 14px; border-radius: 22px; background: rgba(12, 16, 28, 0.55); border: 1px solid rgba(255, 255, 255, 0.12); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
     .dock-item { width: var(--dock-size); height: var(--dock-size); border-radius: 14px; display: grid; place-items: center; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.10); transition: transform 0.08s ease; color: var(--text); overflow: hidden; }
     .dock-item img { width: 100%; height: 100%; object-fit: cover; }
     .favorites-dock {
@@ -205,12 +209,16 @@
       box-shadow: var(--shadow);
       cursor: pointer;
     }
+    .search-inline { margin: 0; gap: 8px; }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row-cell-end { align-self: end; }
+    .import-log { max-height: 220px; overflow: auto; background: rgba(0, 0, 0, 0.35); padding: 10px; border-radius: 12px; }
     .favorites-dock .fav-btn:hover {
       background: var(--accent);
       color: #0b132b;
     }
     .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6); z-index: 50; }
-    .panel { width: min(780px, 95vw); background: #0d1324; color: var(--text); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 18px; backdrop-filter: blur(18px); box-shadow: var(--shadow); padding: 18px; }
+    .panel { width: min(780px, 95vw); background: #0d1324; color: var(--text); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 18px; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: var(--shadow); padding: 18px; }
     [data-theme="light"] .panel { background: #ffffffcc; }
     .panel h3 { margin: 6px 6px 14px; }
     .form { display: grid; gap: 12px; }
@@ -235,11 +243,21 @@
         <a class="top-link-btn" href="https://buymeacoffee.com/timintech" target="_blank" rel="noopener noreferrer">☕ Buy me a coffee</a>
       </nav>
       <div class="top-actions">
-        <button class="btn" id="btnImport" title="Import"><i class="fa-solid fa-file-import"></i></button>
-        <button class="btn" id="btnExport" title="Export"><i class="fa-solid fa-file-export"></i></button>
-        <button class="btn" id="btnAdd" title="App hinzufügen"><i class="fa-solid fa-plus"></i></button>
-        <button class="btn" id="btnSettings" title="Einstellungen"><i class="fa-solid fa-gear"></i></button>
-        <button class="btn" id="btnTheme" title="Theme umschalten"><i class="fa-solid fa-sun"></i></button>
+        <button class="btn" id="btnImport" type="button" title="Import" aria-label="Import">
+          <i class="fa-solid fa-file-import" aria-hidden="true"></i>
+        </button>
+        <button class="btn" id="btnExport" type="button" title="Export" aria-label="Export">
+          <i class="fa-solid fa-file-export" aria-hidden="true"></i>
+        </button>
+        <button class="btn" id="btnAdd" type="button" title="App hinzufügen" aria-label="App hinzufügen">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+        </button>
+        <button class="btn" id="btnSettings" type="button" title="Einstellungen" aria-label="Einstellungen">
+          <i class="fa-solid fa-gear" aria-hidden="true"></i>
+        </button>
+        <button class="btn" id="btnTheme" type="button" title="Theme umschalten" aria-label="Theme umschalten">
+          <i class="fa-solid fa-sun" aria-hidden="true"></i>
+        </button>
       </div>
     </header>
     <main>
@@ -249,35 +267,35 @@
       </div>
       <div class="widgets">
         <div class="card stat">
-          <i class="fa-solid fa-circle-nodes" style="color: var(--brand);"></i>
+          <i class="fa-solid fa-circle-nodes stat-icon-brand" aria-hidden="true"></i>
           <div>
             <div class="val" id="statApps">0</div>
             <div class="lbl">Einträge</div>
           </div>
         </div>
         <div class="card stat">
-          <i class="fa-solid fa-signal" style="color: var(--ok);"></i>
+          <i class="fa-solid fa-signal stat-icon-ok" aria-hidden="true"></i>
           <div>
             <div class="val" id="statUp">–</div>
             <div class="lbl">Online</div>
           </div>
         </div>
         <div class="card stat">
-          <i class="fa-solid fa-tag" style="color: var(--accent);"></i>
+          <i class="fa-solid fa-tag stat-icon-accent" aria-hidden="true"></i>
           <div>
             <div class="val" id="statCats">0</div>
             <div class="lbl">Kategorien</div>
           </div>
         </div>
         <div class="card stat">
-          <i class="fa-regular fa-clock" style="color: var(--accent);"></i>
+          <i class="fa-regular fa-clock stat-icon-accent" aria-hidden="true"></i>
           <div>
             <div class="val" id="clock">--:--</div>
             <div class="lbl">Uhrzeit</div>
           </div>
         </div>
         <div class="card stat" id="weatherCard">
-          <i class="fa-solid fa-cloud-sun" style="color: var(--accent);"></i>
+          <i class="fa-solid fa-cloud-sun stat-icon-accent" aria-hidden="true"></i>
           <div>
             <div class="val" id="weatherNow">—</div>
             <div class="lbl" id="weatherLbl">Wetter</div>
@@ -289,7 +307,9 @@
           <i class="fa-solid fa-magnifying-glass"></i>
           <input id="q" placeholder="Suche nach Name, Domain oder Tag…  ⌘/Ctrl+K" autofocus>
         </div>
-        <button class="btn" id="btnClear"><i class="fa-solid fa-xmark"></i></button>
+        <button class="btn" id="btnClear" type="button" aria-label="Suche zurücksetzen" title="Suche zurücksetzen">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
       </div>
       <div class="toolbar">
         <label class="toggle"><input type="checkbox" id="chkCompact"> Kompakter Modus</label>
@@ -362,8 +382,8 @@
             <label for="fUrl">URL</label>
             <input id="fUrl" placeholder="http://192.168.178.21/admin">
           </div>
-          <div style="align-self: end;">
-            <button class="btn" id="btnSuggest" style="width: 100%;">✨ Details vorschlagen</button>
+          <div class="row-cell-end">
+            <button class="btn btn-wide" id="btnSuggest">✨ Details vorschlagen</button>
           </div>
         </div>
         <div class="row">
@@ -417,7 +437,7 @@
             <button class="btn" id="btnDoImport"><i class="fa-solid fa-file-arrow-up"></i> Import</button>
           </div>
         </div>
-        <pre id="importLog" style="max-height: 220px; overflow: auto; background: rgba(0, 0, 0, 0.35); padding: 10px; border-radius: 12px;"></pre>
+        <pre id="importLog" class="import-log"></pre>
       </div>
     </div>
   </div>
@@ -461,11 +481,13 @@
           </div>
           <div>
             <label for="setGeminiWp">✨ AI Wallpaper (Thema)</label>
-            <div class="search" style="margin: 0; gap: 8px;">
+            <div class="search search-inline">
               <div class="field">
                 <input id="setGeminiWp" placeholder="z.B. neon city, bioluminescent forest...">
               </div>
-              <button class="btn" id="btnGenWp"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+              <button class="btn" id="btnGenWp" type="button" aria-label="AI Wallpaper erzeugen" title="AI Wallpaper erzeugen">
+                <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -492,14 +514,14 @@
         <div class="row">
           <div>
             <label>Daten exportieren</label>
-            <div style="display: flex; gap: 8px;">
+            <div class="btn-group">
               <button class="btn" id="btnExportJSON"><i class="fa-solid fa-file-code"></i> JSON</button>
               <button class="btn" id="btnExportMD"><i class="fa-solid fa-file-lines"></i> Markdown</button>
             </div>
           </div>
           <div>
             <label>Backup/Restore</label>
-            <div style="display: flex; gap: 8px;">
+            <div class="btn-group">
               <button class="btn" id="btnBackup"><i class="fa-solid fa-download"></i> Backup</button>
               <button class="btn" id="btnRestore"><i class="fa-solid fa-upload"></i> Restore</button>
               <input id="restoreFile" type="file" accept="application/json" hidden>
@@ -1204,7 +1226,7 @@
       })).filter(e => e.start && e.end && e.end > now).sort((a, b) => a.start - b.start).slice(0, 3);
       let cal = document.getElementById('icsCard');
       if (!cal) { cal = el('div', 'card stat'); cal.id = 'icsCard'; $('.widgets').appendChild(cal); }
-      cal.innerHTML = `<i class="fa-regular fa-calendar" style="color: var(--brand);"></i><div><div class="val">${upcoming.length ? upcoming[0].sum : 'Keine Termine'}</div><div class="lbl">Kalender</div></div>`;
+      cal.innerHTML = `<i class="fa-regular fa-calendar stat-icon-brand" aria-hidden="true"></i><div><div class="val">${upcoming.length ? upcoming[0].sum : 'Keine Termine'}</div><div class="lbl">Kalender</div></div>`;
     }
 
     // ===== DRAG & DROP REORDER =====
