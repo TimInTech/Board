@@ -1,0 +1,6 @@
+{
+  "extends": "htmlhint:recommended",
+  "exclude": [
+    "meta-snippet.html"
+  ]
+}
