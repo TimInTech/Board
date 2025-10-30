@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "msedge",
+            "name": "https://timintech.github.io/Board/",
+            "request": "launch",
+            "url": "https://timintech.github.io/Board/"
+        }
+    ]
+}
