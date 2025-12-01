@@ -1071,9 +1071,9 @@
   </div>
 
   <!-- Modal: Add -->
-  <div class="modal" id="modalAdd">
+  <div class="modal" id="modalAdd" role="dialog" aria-modal="true" aria-labelledby="modalAddTitle">
     <div class="panel">
-      <h3>Eintrag hinzufügen</h3>
+      <h3 id="modalAddTitle">Eintrag hinzufügen</h3>
       <div class="form">
         <div class="row">
           <div>
@@ -1135,9 +1135,9 @@
   </div>
 
   <!-- Modal: Import -->
-  <div class="modal" id="modalImport">
+  <div class="modal" id="modalImport" role="dialog" aria-modal="true" aria-labelledby="modalImportTitle">
     <div class="panel">
-      <h3>Import: Bookmarks/Listen</h3>
+      <h3 id="modalImportTitle">Import: Bookmarks/Listen</h3>
       <div class="form">
         <div class="drop" id="drop">Dateien hier ablegen oder wählen. Unterstützt: HTML (Netscape), CSV, JSON (Array),
           TXT (eine URL pro Zeile).</div>
@@ -1160,9 +1160,9 @@
   </div>
 
   <!-- Modal: Settings -->
-  <div class="modal" id="modalSettings">
+  <div class="modal" id="modalSettings" role="dialog" aria-modal="true" aria-labelledby="modalSettingsTitle">
     <div class="panel">
-      <h3>Einstellungen</h3>
+      <h3 id="modalSettingsTitle">Einstellungen</h3>
       <div class="form">
         <div class="row">
           <div>
@@ -1179,6 +1179,21 @@
               <option value="normal">Normal</option>
               <option value="compact">Kompakt</option>
             </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="tileSizeSlider">Kachel-Größe: <span id="tileSizeValue">110</span>px</label>
+            <input type="range" id="tileSizeSlider" min="80" max="160" step="10" value="110" 
+                   aria-label="Kachelgröße anpassen" aria-valuemin="80" aria-valuemax="160" aria-valuenow="110">
+          </div>
+          <div>
+            <label>Widgets anzeigen</label>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <label class="toggle" style="margin: 0;"><input type="checkbox" id="chkShowWeather" checked> Wetter</label>
+              <label class="toggle" style="margin: 0;"><input type="checkbox" id="chkShowCalendar" checked> Kalender</label>
+              <label class="toggle" style="margin: 0;"><input type="checkbox" id="chkShowStatus" checked> Online-Status</label>
+            </div>
           </div>
         </div>
         <div class="row">
@@ -1416,10 +1431,13 @@
     function tile(a) {
       const t = el('div', 'tile');
       t.setAttribute('draggable', 'true');
+      t.setAttribute('role', 'link');
+      t.setAttribute('tabindex', '0');
+      t.setAttribute('aria-label', `${a.name} - ${domain(a.url)} öffnen`);
       t.appendChild(tileIcon(a));
       t.appendChild(el('div', 'name', a.name));
       t.appendChild(el('div', 'url', domain(a.url)));
-      t.onclick = (e) => { if (e.target.closest('.dragging')) return; window.open(a.url, '_blank', 'noopener'); };
+      t.dataset.url = a.url;
       t.dataset.key = a.name + '@' + a.url;
       return t;
     }
@@ -1447,17 +1465,81 @@
         img.src = fav(a.url);
         d.appendChild(img);
         d.title = a.name;
-        d.onclick = () => window.open(a.url, '_blank', 'noopener');
+        d.dataset.url = a.url;
+        d.setAttribute('role', 'button');
+        d.setAttribute('tabindex', '0');
+        d.setAttribute('aria-label', `${a.name} öffnen`);
         dockEl.appendChild(d);
       });
       initDnD();
     }
+    
+    // Event Delegation for Tiles and Dock (prevents memory leaks)
+    sectionsEl.addEventListener('click', (e) => {
+      const tile = e.target.closest('.tile');
+      if (tile && !tile.classList.contains('dragging') && tile.dataset.url) {
+        window.open(tile.dataset.url, '_blank', 'noopener');
+      }
+    });
+    
+    sectionsEl.addEventListener('keydown', (e) => {
+      const tile = e.target.closest('.tile');
+      if (tile && tile.dataset.url && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        window.open(tile.dataset.url, '_blank', 'noopener');
+      }
+    });
+    
+    dockEl.addEventListener('click', (e) => {
+      const item = e.target.closest('.dock-item');
+      if (item && item.dataset.url) {
+        window.open(item.dataset.url, '_blank', 'noopener');
+      }
+    });
+    
+    dockEl.addEventListener('keydown', (e) => {
+      const item = e.target.closest('.dock-item');
+      if (item && item.dataset.url && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        window.open(item.dataset.url, '_blank', 'noopener');
+      }
+    });
 
     // ===== SEARCH =====
     const input = $('#q');
     $('#btnClear').addEventListener('click', () => { input.value = ''; doSearch(); input.focus(); });
     input.addEventListener('input', doSearch);
-    window.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.focus(); } });
+    window.addEventListener('keydown', e => { 
+      // Global keyboard shortcuts
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { 
+        e.preventDefault(); 
+        input.focus(); 
+      }
+      
+      // ESC to close modals
+      if (e.key === 'Escape') {
+        const openModals = document.querySelectorAll('.modal[style*="flex"]');
+        openModals.forEach(modal => {
+          modal.style.display = 'none';
+        });
+      }
+      
+      // Ctrl/Cmd + , for Settings
+      if ((e.metaKey || e.ctrlKey) && e.key === ',') {
+        e.preventDefault();
+        openSettings();
+      }
+      
+      // Ctrl/Cmd + N for Add
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        const mAdd = $('#modalAdd');
+        if (mAdd) {
+          mAdd.style.display = 'flex';
+          $('#fName')?.focus();
+        }
+      }
+    });
     function doSearch() {
       const q = input.value.trim().toLowerCase();
       if (!q) { APPS = loadModel(); render(); return; }
@@ -1782,6 +1864,9 @@
     const chkCollapse = $('#chkCollapse');
     const setGeminiKey = $('#setGeminiKey');
     const setGeminiWp = $('#setGeminiWp'), btnGenWp = $('#btnGenWp');
+    const tileSizeSlider = $('#tileSizeSlider'), tileSizeValue = $('#tileSizeValue');
+    const chkShowWeather = $('#chkShowWeather'), chkShowCalendar = $('#chkShowCalendar'), chkShowStatus = $('#chkShowStatus');
+    
     function openSettings() {
       const s = loadSettings();
       setTheme.value = s.theme;
@@ -1793,6 +1878,18 @@
       setGeminiKey.value = s.geminiKey || '';
       chkCompact.checked = !!s.compact;
       chkCollapse.checked = !!s.collapse;
+      
+      // Tile Size
+      const tileSize = s.tileSize || 110;
+      tileSizeSlider.value = tileSize;
+      tileSizeValue.textContent = tileSize;
+      tileSizeSlider.setAttribute('aria-valuenow', tileSize);
+      
+      // Widget visibility
+      chkShowWeather.checked = s.showWeather !== false;
+      chkShowCalendar.checked = s.showCalendar !== false;
+      chkShowStatus.checked = s.showOnlineStatus !== false;
+      
       mSet.style.display = 'flex';
       document.dispatchEvent(new CustomEvent('board:settings-open'));
     }
@@ -1809,6 +1906,47 @@
     }
     chkCompact.onchange = () => { SETTINGS.compact = chkCompact.checked; saveSettings(SETTINGS); applyTheme(); };
     chkCollapse.onchange = () => { SETTINGS.collapse = chkCollapse.checked; saveSettings(SETTINGS); render(); };
+    
+    // Tile Size Slider
+    tileSizeSlider.addEventListener('input', () => {
+      const size = parseInt(tileSizeSlider.value, 10);
+      tileSizeValue.textContent = size;
+      tileSizeSlider.setAttribute('aria-valuenow', size);
+      document.documentElement.style.setProperty('--tile-size', `${size}px`);
+    });
+    tileSizeSlider.addEventListener('change', () => {
+      const size = parseInt(tileSizeSlider.value, 10);
+      SETTINGS.tileSize = size;
+      saveSettings(SETTINGS);
+      showNotification(`Kachelgröße: ${size}px`, 'info');
+    });
+    
+    // Widget Visibility Toggles
+    chkShowWeather.onchange = () => {
+      SETTINGS.showWeather = chkShowWeather.checked;
+      saveSettings(SETTINGS);
+      updateWidgetVisibility();
+    };
+    chkShowCalendar.onchange = () => {
+      SETTINGS.showCalendar = chkShowCalendar.checked;
+      saveSettings(SETTINGS);
+      updateWidgetVisibility();
+    };
+    chkShowStatus.onchange = () => {
+      SETTINGS.showOnlineStatus = chkShowStatus.checked;
+      saveSettings(SETTINGS);
+      updateWidgetVisibility();
+    };
+    
+    function updateWidgetVisibility() {
+      const weatherCard = $('#weatherCard');
+      const calCard = $('#calCard');
+      const statCard = $('#statCard');
+      if (weatherCard) weatherCard.style.display = SETTINGS.showWeather !== false ? '' : 'none';
+      if (calCard) calCard.style.display = SETTINGS.showCalendar !== false ? '' : 'none';
+      if (statCard) statCard.style.display = SETTINGS.showOnlineStatus !== false ? '' : 'none';
+    }
+    
     setWallpaper.addEventListener('change', async () => {
       const f = setWallpaper.files?.[0];
       if (!f) return;
@@ -2045,12 +2183,18 @@
       applyTheme();
       applyWallpaper();
       render();
+      updateWidgetVisibility();
       updateStatuses();
       setInterval(updateStatuses, 15000);
       fetchWeather();
       fetchICS();
       initDockMagnify();
       fetchAIGreeting();
+      
+      // Apply saved tile size
+      if (SETTINGS.tileSize) {
+        document.documentElement.style.setProperty('--tile-size', `${SETTINGS.tileSize}px`);
+      }
     }
     init();
 
